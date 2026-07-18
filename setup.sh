@@ -40,7 +40,7 @@ log_error() {
 }
 
 show_help() {
-    cat << EOF
+    cat << EOF_USAGE
 Usage: $(basename "$0") [OPTIONS]
 
 Automated setup for the OMP coding agent harness.
@@ -57,8 +57,7 @@ Examples:
   $(basename "$0")              # Full installation
   $(basename "$0") --dry-run    # Preview installation
   $(basename "$0") --uninstall  # Remove setup
-
-EOF
+EOF_USAGE
 }
 
 # ============================================================
@@ -207,7 +206,8 @@ validate_installation() {
     # Check skills directory
     if [[ -d "${AGENT_DIR}/skills" ]]; then
         local skill_count
-        skill_count=$(find "${AGENT_DIR}/skills" -name "SKILL.md" | wc -l)
+        skill_count=$(find "${AGENT_DIR}/skills" -name "SKILL.md" 2>/dev/null | wc -l)
+        
         if [[ "$skill_count" -gt 0 ]]; then
             log_success "Skills directory populated (${skill_count} skills)"
         else
@@ -220,8 +220,9 @@ validate_installation() {
     
     # Check rules
     if [[ -d "${AGENT_DIR}/rules" ]]; then
-        local rule_count
+        local rule_count=0
         rule_count=$(ls "${AGENT_DIR}/rules"/*.md 2>/dev/null | wc -l || echo 0)
+        
         log_success "Rules directory ready (${rule_count} rules)"
     fi
     

@@ -3,14 +3,12 @@
 # Common automation commands
 # ============================================================
 
-# Variables
-AGENTS_DIR ?= $(HOME)/.agents
+SHELL := /usr/bin/env bash
 SCRIPT_DIR := $(CURDIR)
-PYTHON ?= python3
-BASH ?= bash
+AGENT_DIR ?= $(HOME)/.agents
 
-# Default target
-.PHONY: help
+.PHONY: help install validate skills clean test-env lint docs
+
 help:
 	@echo "OMP Agentic Setup - Available Commands"
 	@echo "========================================="
@@ -19,95 +17,52 @@ help:
 	@echo "make skills       - List available skills"
 	@echo "make clean        - Uninstall and clean up"
 	@echo "make test-env     - Test environment setup"
-	@echo "make skills-update - Update skills to latest versions"
-	@echo "make check-upgrade - Validate and upgrade if needed"
 	@echo "make lint         - Run linting checks on scripts"
 	@echo "make docs         - Generate documentation"
+	@echo "make pr           - Create a pull request"
 
-# Installation commands
-.PHONY: install
 install:
 	@echo "Installing OMP Agentic Setup..."
-	@$(BASH) $(SCRIPT_DIR)/setup.sh
+	@$(SCRIPT_DIR)/setup.sh
 
-.PHONY: install-skill
-install-skill:
-	@echo "Installing specific skill: $(SKILL)"
-	@$(BASH) $(SCRIPT_DIR)/setup.sh --install-skill "$(SKILL)"
-
-# Validation commands
-.PHONY: validate
 validate:
 	@echo "Validating installation..."
-	@$(BASH) $(SCRIPT_DIR)/scripts/validate.sh
+	@$(SCRIPT_DIR)/scripts/validate.sh
 
-.PHONY: test-env
-test-env:
-	@echo "Testing environment setup..."
-	@$(BASH) $(SCRIPT_DIR)/setup.sh --dry-run
-	@$(BASH) $(SCRIPT_DIR)/scripts/validate.sh || true
-
-# Skills management
-.PHONY: skills
 skills:
 	@echo "Available skills:"
-	@$(BASH) $(SCRIPT_DIR)/setup.sh --list-skills
+	@find $(SCRIPT_DIR)/.agents/skills -mindepth 1 -maxdepth 1 -type d | while read dir; do \
+		name=$$(basename "$$dir"); \
+		desc=$$(head -5 "$$dir/SKILL.md" | grep -E "^# " | sed 's/^# //' | head -1); \
+		printf "  %-30s %s\n" "$$name" "($$desc)"; \
+	done | sort
 
-.PHONY: skills-update
-skills-update:
-	@echo "Updating skills..."
-	@if [ -d "$(AGENTS_DIR)/skills" ]; then \
-		for skill in $(AGENTS_DIR)/skills/*/; do \
-			echo "Updating $$skill"; \
-			if [ -d "$$skill/.git" ]; then \
-				(cd "$$skill" && git pull); \
-			fi; \
-		done; \
-	fi
-
-.PHONY: check-upgrade
-check-upgrade: validate
-	@echo "Checking for upgrades..."
-	@$(BASH) $(SCRIPT_DIR)/scripts/check-upgrade.sh
-
-# Cleanup
-.PHONY: clean
 clean:
 	@echo "Cleaning up..."
-	@$(BASH) $(SCRIPT_DIR)/setup.sh --uninstall
+	@rm -rf ~/.agents
 
-# Linting
-.PHONY: lint
+test-env:
+	@echo "Testing environment setup..."
+	@$(SCRIPT_DIR)/setup.sh --dry-run
+	@$(SCRIPT_DIR)/scripts/validate.sh || true
+
 lint:
 	@echo "Linting scripts..."
 	@if command -v shellcheck >/dev/null 2>&1; then \
-		shellcheck $(SCRIPT_DIR)/setup.sh $(SCRIPT_DIR)/scripts/*.sh; \
+		shellcheck $(SCRIPT_DIR)/setup.sh $(SCRIPT_DIR)/scripts/validate.sh; \
 	else \
 		echo "shellcheck not installed, skipping"; \
 	fi
-	@if command -v markdownlint >/dev/null 2>&1; then \
-		markdownlint $(SCRIPT_DIR)/*.md $(SCRIPT_DIR)/docs/*.md; \
-	else \
-		echo "markdownlint not installed, skipping"; \
-	fi
 
-# Documentation
-.PHONY: docs
 docs:
-	@echo "Generating documentation..."
-	@$(PYTHON) $(SCRIPT_DIR)/scripts/generate-docs.py
+	@echo "Documentation files:"
+	@ls -1 $(SCRIPT_DIR)/docs/*.md 2>/dev/null || echo "No docs found"
 
-# Development
-.PHONY: dev-setup
-dev-setup:
-	@echo "Setting up development environment..."
-	@$(BASH) $(SCRIPT_DIR)/setup.sh --skip-system
-	@$(BASH) $(SCRIPT_DIR)/scripts/validate.sh
-
-# CI targets
-.PHONY: ci
-ci: lint validate
-	@echo "Running CI checks..."
-
-.PHONY: all
-all: install validate
+pr:
+	@echo "Creating pull request..."
+	@if command -v gh >/dev/null 2>&1; then \
+		gh pr create; \
+	else \
+		echo "GitHub CLI (gh) not installed"; \
+		echo "Visit: https://github.com/antoinelucasfra/agentic-setup/pull/new/main"; \
+	fi

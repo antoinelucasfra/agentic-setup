@@ -1,15 +1,18 @@
 # agentic-setup
 
-OMP agent config, personal skills, and multi-device sync.
+OMP agent config: skills, agents, rules, hooks, plugins — multi-device sync via git.
 
 ## Contents
 
 | Path | What |
 |---|---|
 | `omp-manifest.yml` | Marketplaces, plugins, OMP settings, extension configs |
-| `.agents/skills/` | 30 personal skills (synced) |
 | `.agents/AGENTS.md` | Global agent instructions |
-| `.agents/rules/` | Custom code rules |
+| `.agents/settings.json` | Agent settings |
+| `.agents/skills/` | 40 skills (30 original + 10 from `.github/skills/`) |
+| `.agents/agents/` | 16 task agent definitions (moved from `.github/agents/`) |
+| `.agents/rules/` | 8 coding rules (general + commit-workflow) |
+| `.agents/hooks/` | Session auto-commit hook (moved from `.github/hooks/`) |
 
 ## Device Setup
 
@@ -18,11 +21,12 @@ OMP agent config, personal skills, and multi-device sync.
 git clone https://github.com/antoinelucasfra/agentic-setup.git
 cd agentic-setup
 
-# Install OMP (one-time)
-
-# Copy agent config
-cp -r .agents/AGENTS.md .agents/rules/ ~/.agents/
+# Copy everything to ~/.agents/
+cp -r .agents/AGENTS.md .agents/settings.json ~/.agents/
 cp -r .agents/skills/* ~/.agents/skills/
+cp -r .agents/agents/ ~/.agents/agents/
+cp -r .agents/rules/* ~/.agents/rules/
+cp -r .agents/hooks/ ~/.agents/hooks/
 
 # Apply manifest (plugins, settings, extensions)
 yq eval '.settings' omp-manifest.yml > ~/.omp/agent/config.yml
@@ -34,15 +38,18 @@ yq eval '.plugins[].id' omp-manifest.yml | xargs -I{} omp plugin install "{}" 2>
 
 ## Daily Sync
 
-After adding a skill to `~/.agents/skills/` or changing config:
+After adding/changing a skill, agent, rule, or hook:
 
 ```bash
 cd ~/project/agentic-setup
 
-# Snapshot skills + config
+# Snapshot everything from ~/.agents/
 rsync -a ~/.agents/skills/ .agents/skills/
-rsync -a ~/.agents/AGENTS.md .agents/
+rsync -a ~/.agents/agents/ .agents/agents/
 rsync -a ~/.agents/rules/ .agents/rules/
+rsync -a ~/.agents/hooks/ .agents/hooks/
+cp ~/.agents/AGENTS.md .agents/
+cp ~/.agents/settings.json .agents/
 
 git add -A && git commit -m "chore: sync $(date +%Y%m%d)" && git push
 ```
@@ -50,25 +57,38 @@ git add -A && git commit -m "chore: sync $(date +%Y%m%d)" && git push
 On the other device:
 ```bash
 cd ~/project/agentic-setup && git pull
+
+# Restore everything to ~/.agents/
 rsync -a .agents/skills/ ~/.agents/skills/
-cp .agents/AGENTS.md ~/.agents/
+rsync -a .agents/agents/ ~/.agents/agents/
 rsync -a .agents/rules/ ~/.agents/rules/
+rsync -a .agents/hooks/ ~/.agents/hooks/
+cp .agents/AGENTS.md ~/.agents/
+cp .agents/settings.json ~/.agents/
 ```
 
 ### Auto-sync shell hook (optional)
 
 ```bash
 # In ~/.zshrc or ~/.bashrc
-skill-sync() { rsync -a ~/.agents/skills/ ~/project/agentic-setup/.agents/skills/ && cd ~/project/agentic-setup && git add -A && git commit -m "chore: sync $(date +%Y%m%d)" && git push; }
+omp-sync() {
+  cd ~/project/agentic-setup
+  rsync -a ~/.agents/ .agents/ --exclude=.agents/skills/node_modules
+  git add -A && git commit -m "chore: sync $(date +%Y%m%d)" && git push
+}
 ```
 
-## Skills
+## Structure
 
-Your personal skills live in `~/.agents/skills/`. The repo holds a versioned copy. To add a new skill:
+```
+~/.agents/                  # User-global OMP config (every session)
+├── AGENTS.md               # Global agent instructions
+├── settings.json           # Empty (OMP reads ~/.omp/agent/config.yml)
+├── agents/                 # 16 task agent definitions
+├── rules/                  # 8 coding rules
+├── hooks/session-end/      # Auto-commit hook
+└── skills/                 # 40 skills
 
-```bash
-mkdir ~/.agents/skills/<name>
-# write ~/.agents/skills/<name>/SKILL.md
-cp -r ~/.agents/skills/<name> ~/project/agentic-setup/.agents/skills/
-cd ~/project/agentic-setup && git add -A && git commit -m "feat: add <name> skill" && git push
+~/project/.agents/rules/    # Project-specific rules only (9)
+                            # (AGENTS.md, general rules removed)
 ```

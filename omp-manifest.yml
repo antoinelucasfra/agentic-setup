@@ -1,0 +1,55 @@
+# OMP Device Manifest — single source of truth for OMP config
+# Used by omp-bootstrap.sh to set up a new device.
+#
+# Three sections:
+#   marketplaces — plugin registries to subscribe to
+#   plugins     — what to install from those marketplaces + npm
+#   settings    — OMP settings written to ~/.omp/agent/config.yml
+
+marketplaces:
+  - source: anthropics/claude-plugins-official
+    name: claude-plugins-official
+  - source: pymc-labs/python-analytics-skills
+    name: python-analytics-skills
+
+plugins:
+  # Marketplace plugins (installed via `omp plugin install <id>`)
+  - id: analytics@python-analytics-skills
+  - id: context7@claude-plugins-official
+
+  # NPM packages (installed via `omp plugin install <package>`)
+  - id: npm:@dietrichgebert/ponytail
+  - id: npm:pi-rtk-optimizer
+
+settings:
+  symbolPreset: unicode
+  theme:
+    dark: titanium
+  modelRoles:
+    default: opencode-zen/deepseek-v4-flash-free:max
+    plan: opencode-zen/deepseek-v4-flash-free:max
+  setupVersion: 1
+
+# Extension configs written to ~/.omp/agent/extensions/<name>/config.json
+extensions:
+  pi-rtk-optimizer:
+    enabled: true
+    mode: rewrite
+    guardWhenRtkMissing: true
+    showRewriteNotifications: true
+    outputCompaction:
+      enabled: true
+      stripAnsi: true
+      readCompaction:
+        enabled: true
+      sourceCodeFilteringEnabled: false
+      preserveExactSkillReads: true
+      truncate:
+        enabled: true
+        maxChars: 12000
+      aggregateTestOutput: true
+      filterBuildOutput: true
+      compactGitOutput: true
+      aggregateLinterOutput: true
+      groupSearchOutput: true
+      trackSavings: true

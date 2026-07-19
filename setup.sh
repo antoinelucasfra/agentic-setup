@@ -16,7 +16,6 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENT_DIR="${HOME}/.agents"
-VERBOSE=false
 SKIP_SYSTEM_CHECKS=false
 
 # ============================================================
@@ -40,7 +39,7 @@ log_error() {
 }
 
 show_help() {
-    cat << EOF
+    cat << EOF_USAGE
 Usage: $(basename "$0") [OPTIONS]
 
 Automated setup for the OMP coding agent harness.
@@ -57,21 +56,13 @@ Examples:
   $(basename "$0")              # Full installation
   $(basename "$0") --dry-run    # Preview installation
   $(basename "$0") --uninstall  # Remove setup
-
-EOF
+EOF_USAGE
 }
 
 # ============================================================
 # System Checks
 # ============================================================
 
-check_bash_version() {
-    if [[ "${BASH_VERSION%%.*}" -lt 4 ]]; then
-        log_warning "Bash 4+ recommended, found ${BASH_VERSION}"
-    else
-        log_success "Bash version: ${BASH_VERSION}"
-    fi
-}
 
 check_required_commands() {
     local missing=()
@@ -113,7 +104,7 @@ check_os() {
 install_dependencies() {
     log_info "Checking system dependencies..."
     
-    check_bash_version
+
     check_required_commands || return 1
     check_os
     
@@ -122,8 +113,6 @@ install_dependencies() {
 
 install_git_hooks() {
     log_info "Installing git hooks..."
-    
-    local hook_dir="${SCRIPT_DIR}/.git/hooks"
     
     if [[ -d "${SCRIPT_DIR}/.git" ]]; then
         # Copy pre-commit hook if it exists
@@ -155,38 +144,16 @@ setup_agent_directory() {
     # Copy skills
     if [[ -d "${SCRIPT_DIR}/.agents/skills" ]]; then
         cp -r "${SCRIPT_DIR}/.agents/skills/"* "${AGENT_DIR}/skills/"
-        log_success "Skills installed: $(ls "${AGENT_DIR}/skills/" | wc -l) skills"
+        log_success "Skills installed: $(find "${AGENT_DIR}/skills" -name SKILL.md 2>/dev/null | wc -l) skills"
     fi
     
     # Copy rules
     if [[ -d "${SCRIPT_DIR}/.agents/rules" ]]; then
         cp -r "${SCRIPT_DIR}/.agents/rules/"* "${AGENT_DIR}/rules/"
-        log_success "Rules installed: $(ls "${AGENT_DIR}/rules/" | wc -l) rules"
+        log_success "Rules installed: $(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l) rules"
     fi
 }
 
-install_rtk() {
-    log_info "Checking for RTK (token-optimized CLI)..."
-    
-    if command -v rtk &> /dev/null; then
-        log_success "RTK already installed: $(rtk --version 2>/dev/null || echo 'version unknown')"
-    else
-        log_info "RTK not found - please install manually or check documentation"
-        log_info "RTK proxy saves 60-90% tokens on shell commands"
-    fi
-}
-
-install_python_deps() {
-    log_info "Checking Python dependencies..."
-    
-    if command -v python3 &> /dev/null; then
-        local py_ver
-        py_ver=$(python3 --version 2>&1 | awk '{print $2}')
-        log_success "Python ${py_ver} found"
-    else
-        log_warning "Python not found"
-    fi
-}
 
 # ============================================================
 # Validation Functions
@@ -207,7 +174,8 @@ validate_installation() {
     # Check skills directory
     if [[ -d "${AGENT_DIR}/skills" ]]; then
         local skill_count
-        skill_count=$(find "${AGENT_DIR}/skills" -name "SKILL.md" | wc -l)
+        skill_count=$(find "${AGENT_DIR}/skills" -name "SKILL.md" 2>/dev/null | wc -l)
+        
         if [[ "$skill_count" -gt 0 ]]; then
             log_success "Skills directory populated (${skill_count} skills)"
         else
@@ -220,8 +188,9 @@ validate_installation() {
     
     # Check rules
     if [[ -d "${AGENT_DIR}/rules" ]]; then
-        local rule_count
-        rule_count=$(ls "${AGENT_DIR}/rules"/*.md 2>/dev/null | wc -l || echo 0)
+        local rule_count=0
+        rule_count=$(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l || echo 0)
+        
         log_success "Rules directory ready (${rule_count} rules)"
     fi
     
@@ -287,7 +256,6 @@ main() {
                 exit 0
                 ;;
             -v|--verbose)
-                VERBOSE=true
                 set -x
                 ;;
             -s|--skip-system)
@@ -326,7 +294,7 @@ main() {
         log_info "  - Set up agent directory at ${AGENT_DIR}"
         log_info "  - Copy AGENTS.md"
         log_info "  - Install $(find "${SCRIPT_DIR}/.agents/skills" -name "SKILL.md" 2>/dev/null | wc -l) skills"
-        log_info "  - Install $(ls "${SCRIPT_DIR}/.agents/rules"/*.md 2>/dev/null | wc -l) rules"
+        log_info "  - Install $(find "${SCRIPT_DIR}/.agents/rules" -name '*.md' 2>/dev/null | wc -l) rules"
         log_info "  - Install git hooks"
         return 0
     fi
@@ -338,16 +306,13 @@ main() {
     
     setup_agent_directory
     install_git_hooks
-    install_rtk
-    install_python_deps
     
     echo ""
     validate_installation
     
     echo ""
-    log_success "Installation complete! 🎉"
+    log_success "Installation complete!"
     log_info "Run 'source ${AGENT_DIR}/AGENTS.md' or restart your shell"
-    log_info "Use 'rtk gain' to check token savings"
     log_info "Visit ${SCRIPT_DIR}/docs/SETUP.md for advanced configuration"
 }
 

@@ -6,13 +6,10 @@ OMP agent config: skills, agents, rules, hooks, plugins — multi-device sync vi
 
 | Path | What |
 |---|---|
-| `omp-manifest.yml` | Marketplaces, plugins, OMP settings, extension configs |
-| `.agents/AGENTS.md` | Global agent instructions |
-| `.agents/settings.json` | Agent settings |
-| `.agents/skills/` | 40 skills (30 original + 10 from `.github/skills/`) |
-| `.agents/agents/` | 16 task agent definitions (moved from `.github/agents/`) |
-| `.agents/rules/` | 8 coding rules (general + commit-workflow) |
-| `.agents/hooks/` | Session auto-commit hook (moved from `.github/hooks/`) |
+| `.agents/skills/` | 31 skills |
+| `.agents/agents/` | 4 task agent definitions |
+| `.agents/rules/` | 4 coding rules (commit-workflow + 3 general) |
+| `.agents/hooks/` | Session auto-commit hook |
 
 ## Device Setup
 
@@ -78,15 +75,12 @@ omp-sync() {
 }
 ```
 
-## Structure
-
 ```
 ~/.agents/                  # User-global OMP config (every session)
 ├── AGENTS.md               # Global agent instructions
 ├── settings.json           # Empty (OMP reads ~/.omp/agent/config.yml)
-├── agents/                 # 16 task agent definitions
-├── rules/                  # 8 coding rules
+├── agents/                 # 4 task agent definitions
+├── rules/                  # 4 coding rules
 ├── hooks/session-end/      # Auto-commit hook
-└── skills/                 # 40 skills
-
+└── skills/                 # 31 skills
 ```

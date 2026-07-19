@@ -18,9 +18,7 @@ cd agentic-setup
 ./setup.sh --list-skills   # List available skills
 ./setup.sh --uninstall     # Remove setup
 
-make install               # Same as ./setup.sh
 make validate              # Dry-run check
-make skills                # List skills
 ```
 
 ## Contents

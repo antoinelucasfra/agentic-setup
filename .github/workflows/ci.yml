@@ -7,17 +7,12 @@ on:
     branches: [ master ]
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
       - run: shellcheck setup.sh
-
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
       - run: bash setup.sh --dry-run
       - run: |
           test -f .agents/AGENTS.md

@@ -89,6 +89,4 @@ omp-sync() {
 ├── hooks/session-end/      # Auto-commit hook
 └── skills/                 # 40 skills
 
-~/project/.agents/rules/    # Project-specific rules only (9)
-                            # (AGENTS.md, general rules removed)
 ```

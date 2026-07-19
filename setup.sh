@@ -6,33 +6,16 @@
 
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+log() {
+  local c
+  case $1 in ok) c=32;; warn) c=33;; err) c=31;; *) c=34;; esac
+  echo -e "\033[${c}m$2\033[0m"
+}
 
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENT_DIR="${HOME}/.agents"
 SKIP_SYSTEM_CHECKS=false
-
-log_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
-}
-
-log_success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
-
-log_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
-}
-
-log_error() {
-    echo -e "${RED}❌ $1${NC}" >&2
-}
 
 show_help() {
     cat << EOF_USAGE
@@ -46,206 +29,183 @@ Options:
   -s, --skip-system   Skip system dependency checks
   -d, --dry-run       Show what would be done without making changes
   -u, --uninstall     Remove the agent setup
-  -l, --list-skills   List available skills
+  -b, --bootstrap     Apply omp-manifest.yml to this device (plugins, settings)
 
 Examples:
-  $(basename "$0")              # Full installation
-  $(basename "$0") --dry-run    # Preview installation
+  $(basename "$0")              # Full installation (first device)
+  $(basename "$0") --bootstrap  # Apply manifest (device 2+)
   $(basename "$0") --uninstall  # Remove setup
 EOF_USAGE
 }
 
 check_required_commands() {
     local missing=()
-    
     for cmd in git curl; do
         if ! command -v "$cmd" &> /dev/null; then
             missing+=("$cmd")
         fi
     done
-    
     if [[ ${#missing[@]} -gt 0 ]]; then
-        log_error "Missing required commands: ${missing[*]}"
-        log_info "Install with: apt install ${missing[*]} (Debian/Ubuntu)"
-        log_info "               brew install ${missing[*]} (macOS)"
+        log err "Missing required commands: ${missing[*]}"
+        log info "Install with: apt install ${missing[*]} (Debian/Ubuntu)"
+        log info "               brew install ${missing[*]} (macOS)"
         return 1
     fi
-    
-    log_success "All required commands available"
+    log ok "All required commands available"
 }
 
 install_dependencies() {
-    log_info "Checking system dependencies..."
-    
-
+    log info "Checking system dependencies..."
     check_required_commands || return 1
-    
-    log_success "System checks passed"
+    log ok "System checks passed"
 }
 
 setup_agent_directory() {
-    log_info "Setting up agent directory at ${AGENT_DIR}..."
-    
-    mkdir -p "${AGENT_DIR}"
-    mkdir -p "${AGENT_DIR}/skills"
-    mkdir -p "${AGENT_DIR}/rules"
-    
-    # Copy AGENTS.md
-    if [[ -f "${SCRIPT_DIR}/AGENTS.md" ]]; then
-        cp "${SCRIPT_DIR}/AGENTS.md" "${AGENT_DIR}/AGENTS.md"
-        log_success "AGENTS.md installed"
+    log info "Setting up agent directory at ${AGENT_DIR}..."
+    mkdir -p "${AGENT_DIR}" "${AGENT_DIR}/rules"
+
+    if [[ -f "${SCRIPT_DIR}/.agents/AGENTS.md" ]]; then
+        cp "${SCRIPT_DIR}/.agents/AGENTS.md" "${AGENT_DIR}/AGENTS.md"
+        log ok "AGENTS.md installed"
     else
-        log_warning "AGENTS.md not found, skipping"
+        log warn "AGENTS.md not found, skipping"
     fi
-    
-    # Copy skills
-    if [[ -d "${SCRIPT_DIR}/.agents/skills" ]]; then
-        cp -r "${SCRIPT_DIR}/.agents/skills/"* "${AGENT_DIR}/skills/"
-        log_success "Skills installed: $(find "${AGENT_DIR}/skills" -name SKILL.md 2>/dev/null | wc -l) skills"
-    fi
-    
-    # Copy rules
+
     if [[ -d "${SCRIPT_DIR}/.agents/rules" ]]; then
         cp -r "${SCRIPT_DIR}/.agents/rules/"* "${AGENT_DIR}/rules/"
-        log_success "Rules installed: $(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l) rules"
+        log ok "Rules installed: $(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l) rules"
     fi
 }
 
+bootstrap_from_manifest() {
+    local manifest="${SCRIPT_DIR}/omp-manifest.yml"
+    if [[ ! -f "$manifest" ]]; then
+        log err "Manifest not found at $manifest"
+        return 1
+    fi
+    if ! command -v yq &>/dev/null; then
+        log err "yq is required for --bootstrap. Install: pip install yq or brew install yq"
+        return 1
+    fi
+
+    log info "Applying omp-manifest.yml..."
+
+    # OMP settings → config.yml
+    mkdir -p "$HOME/.omp/agent"
+    yq eval '.settings' "$manifest" > "$HOME/.omp/agent/config.yml"
+    log ok "config.yml written"
+
+    # Marketplaces
+    for source in $(yq eval '.marketplaces[].source' "$manifest"); do
+        omp plugin marketplace add "$source" 2>/dev/null && log ok "added marketplace $source" || log warn "$source already present"
+    done
+
+    # Plugins
+    for id in $(yq eval '.plugins[].id' "$manifest"); do
+        omp plugin install "$id" 2>/dev/null && log ok "installed $id" || log warn "$id already installed"
+    done
+
+    # Copy .agents/
+    if [[ -d "${SCRIPT_DIR}/.agents" ]]; then
+        cp -r "${SCRIPT_DIR}/.agents/"* "$AGENT_DIR/" 2>/dev/null || true
+    fi
+
+    # Extension configs
+    for ext in $(yq eval '.extensions | keys | .[]' "$manifest"); do
+        ext_dir="$HOME/.omp/agent/extensions/$ext"
+        mkdir -p "$ext_dir"
+        yq eval ".extensions.$ext" "$manifest" > "$ext_dir/config.json"
+        log ok "$ext extension config applied"
+    done
+
+    # .omp/.gitignore
+    if [[ ! -f "$HOME/.omp/.gitignore" ]]; then
+        cat > "$HOME/.omp/.gitignore" << 'GITIGNORE'
+logs/
+cache/
+agent/*.db
+agent/*.db-wal
+agent/*.db-shm
+run/
+puppeteer/
+plugins/bun.lock
+plugins/node_modules/
+plugins/cache/
+gpu_cache.json
+GITIGNORE
+    fi
+
+    log ok "Bootstrap complete. Start a new OMP session."
+}
+
 validate_installation() {
-    log_info "Validating installation..."
+    log info "Validating installation..."
     local errors=0
-    
-    # Check AGENTS.md
+
     if [[ -f "${AGENT_DIR}/AGENTS.md" ]]; then
-        log_success "AGENTS.md exists"
+        log ok "AGENTS.md exists"
     else
-        log_error "AGENTS.md not installed"
+        log err "AGENTS.md not installed"
         ((errors++))
     fi
-    
-    # Check skills directory
-    if [[ -d "${AGENT_DIR}/skills" ]]; then
-        local skill_count
-        skill_count=$(find "${AGENT_DIR}/skills" -name "SKILL.md" 2>/dev/null | wc -l)
-        
-        if [[ "$skill_count" -gt 0 ]]; then
-            log_success "Skills directory populated (${skill_count} skills)"
-        else
-            log_warning "No skills found"
-        fi
-    else
-        log_error "Skills directory not found"
-        ((errors++))
-    fi
-    
-    # Check rules
+
     if [[ -d "${AGENT_DIR}/rules" ]]; then
-        local rule_count=0
-        rule_count=$(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l || echo 0)
-        
-        log_success "Rules directory ready (${rule_count} rules)"
+        local rule_count
+        rule_count=$(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l)
+        log ok "Rules directory ready (${rule_count} rules)"
     fi
-    
+
     return $errors
 }
 
 uninstall_agent() {
-    log_info "Uninstalling OMP agent setup..."
-    
+    log info "Uninstalling OMP agent setup..."
     if [[ -d "${AGENT_DIR}" ]]; then
         read -p "Remove ${AGENT_DIR}? [y/N] " -n 1 -r
         echo
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             rm -rf "${AGENT_DIR}"
-            log_success "Agent directory removed"
+            log ok "Agent directory removed"
         else
-            log_info "Uninstall cancelled"
+            log info "Uninstall cancelled"
         fi
     else
-        log_info "Agent directory not found, nothing to remove"
-    fi
-}
-
-list_skills() {
-    log_info "Available skills:"
-    echo ""
-    
-    if [[ -d "${SCRIPT_DIR}/.agents/skills" ]]; then
-        find "${SCRIPT_DIR}/.agents/skills" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
-            local skill_name
-            skill_name=$(basename "$dir")
-            local skill_desc=""
-            if [[ -f "${dir}/SKILL.md" ]]; then
-                skill_desc=$(head -5 "${dir}/SKILL.md" | grep -E "^# " | sed 's/^# //' | head -1)
-            fi
-            printf "  %-30s %s\n" "$skill_name" "($skill_desc)"
-        done | sort
-    else
-        log_warning "No skills directory found"
+        log info "Agent directory not found, nothing to remove"
     fi
 }
 
 main() {
     local dry_run=false
-    
-    # Parse arguments
+
     while [[ $# -gt 0 ]]; do
         case "$1" in
-            -h|--help)
-                show_help
-                exit 0
-                ;;
-            -v|--verbose)
-                set -x
-                ;;
-            -s|--skip-system)
-                SKIP_SYSTEM_CHECKS=true
-                ;;
-            -d|--dry-run)
-                dry_run=true
-                log_info "Dry run mode - no changes will be made"
-                ;;
-            -u|--uninstall)
-                uninstall_agent
-                exit 0
-                ;;
-            -l|--list-skills)
-                list_skills
-                exit 0
-                ;;
-            *)
-                log_error "Unknown option: $1"
-                show_help
-                exit 1
-                ;;
+            -h|--help) show_help; exit 0 ;;
+            -v|--verbose) set -x ;;
+            -s|--skip-system) SKIP_SYSTEM_CHECKS=true ;;
+            -d|--dry-run) dry_run=true; log info "Dry run mode - no changes will be made" ;;
+            -u|--uninstall) uninstall_agent; exit 0 ;;
+            -b|--bootstrap) bootstrap_from_manifest; exit $? ;;
+            *) log err "Unknown option: $1"; show_help; exit 1 ;;
         esac
         shift
     done
-    
+
     if [[ "$dry_run" == true ]]; then
-        log_info "Would perform the following:"
-        log_info "  - Install system dependencies"
-        log_info "  - Set up agent directory at ${AGENT_DIR}"
-        log_info "  - Copy AGENTS.md"
-        log_info "  - Install $(find "${SCRIPT_DIR}/.agents/skills" -name "SKILL.md" 2>/dev/null | wc -l) skills"
-        log_info "  - Install $(find "${SCRIPT_DIR}/.agents/rules" -name '*.md' 2>/dev/null | wc -l) rules"
+        log info "Would perform the following:"
+        log info "  - Install system dependencies"
+        log info "  - Set up agent directory at ${AGENT_DIR}"
+        log info "  - Copy AGENTS.md"
+        log info "  - Install rules"
         return 0
     fi
-    
-    # Run installation
-    if [[ "$SKIP_SYSTEM_CHECKS" != true ]]; then
-        install_dependencies || exit 1
-    fi
-    
+
+    [[ "$SKIP_SYSTEM_CHECKS" != true ]] && (install_dependencies || exit 1)
     setup_agent_directory
-    
     echo ""
     validate_installation
-    
     echo ""
-    log_success "Installation complete!"
-    log_info "Run 'source ${AGENT_DIR}/AGENTS.md' or restart your shell"
-    log_info "Visit ${SCRIPT_DIR}/docs/SETUP.md for advanced configuration"
+    log ok "Installation complete!"
+    log info "Start OMP with: omp"
 }
 
 main "$@"

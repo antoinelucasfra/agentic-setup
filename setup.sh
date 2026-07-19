@@ -64,13 +64,6 @@ EOF_USAGE
 # System Checks
 # ============================================================
 
-check_bash_version() {
-    if [[ "${BASH_VERSION%%.*}" -lt 4 ]]; then
-        log_warning "Bash 4+ recommended, found ${BASH_VERSION}"
-    else
-        log_success "Bash version: ${BASH_VERSION}"
-    fi
-}
 
 check_required_commands() {
     local missing=()
@@ -112,7 +105,7 @@ check_os() {
 install_dependencies() {
     log_info "Checking system dependencies..."
     
-    check_bash_version
+
     check_required_commands || return 1
     check_os
     
@@ -164,28 +157,6 @@ setup_agent_directory() {
     fi
 }
 
-install_rtk() {
-    log_info "Checking for RTK (token-optimized CLI)..."
-    
-    if command -v rtk &> /dev/null; then
-        log_success "RTK already installed: $(rtk --version 2>/dev/null || echo 'version unknown')"
-    else
-        log_info "RTK not found - please install manually or check documentation"
-        log_info "RTK proxy saves 60-90% tokens on shell commands"
-    fi
-}
-
-install_python_deps() {
-    log_info "Checking Python dependencies..."
-    
-    if command -v python3 &> /dev/null; then
-        local py_ver
-        py_ver=$(python3 --version 2>&1 | awk '{print $2}')
-        log_success "Python ${py_ver} found"
-    else
-        log_warning "Python not found"
-    fi
-}
 
 # ============================================================
 # Validation Functions
@@ -339,16 +310,13 @@ main() {
     
     setup_agent_directory
     install_git_hooks
-    install_rtk
-    install_python_deps
     
     echo ""
     validate_installation
     
     echo ""
-    log_success "Installation complete! 🎉"
+    log_success "Installation complete!"
     log_info "Run 'source ${AGENT_DIR}/AGENTS.md' or restart your shell"
-    log_info "Use 'rtk gain' to check token savings"
     log_info "Visit ${SCRIPT_DIR}/docs/SETUP.md for advanced configuration"
 }
 

@@ -18,10 +18,6 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENT_DIR="${HOME}/.agents"
 SKIP_SYSTEM_CHECKS=false
 
-# ============================================================
-# Helper Functions
-# ============================================================
-
 log_info() {
     echo -e "${BLUE}ℹ️  $1${NC}"
 }
@@ -59,11 +55,6 @@ Examples:
 EOF_USAGE
 }
 
-# ============================================================
-# System Checks
-# ============================================================
-
-
 check_required_commands() {
     local missing=()
     
@@ -83,47 +74,13 @@ check_required_commands() {
     log_success "All required commands available"
 }
 
-check_os() {
-    case "$(uname -s)" in
-        Linux*)
-            log_success "Linux detected"
-            ;;
-        Darwin*)
-            log_success "macOS detected"
-            ;;
-        *)
-            log_warning "Unknown OS: $(uname -s)"
-            ;;
-    esac
-}
-
-# ============================================================
-# Installation Functions
-# ============================================================
-
 install_dependencies() {
     log_info "Checking system dependencies..."
     
 
     check_required_commands || return 1
-    check_os
     
     log_success "System checks passed"
-}
-
-install_git_hooks() {
-    log_info "Installing git hooks..."
-    
-    if [[ -d "${SCRIPT_DIR}/.git" ]]; then
-        # Copy pre-commit hook if it exists
-        if [[ -f "${SCRIPT_DIR}/scripts/pre-commit" ]]; then
-            cp "${SCRIPT_DIR}/scripts/pre-commit" "${SCRIPT_DIR}/.git/hooks/pre-commit"
-            chmod +x "${SCRIPT_DIR}/.git/hooks/pre-commit"
-            log_success "Pre-commit hook installed"
-        fi
-    else
-        log_info "Not in a git repository, skipping hooks"
-    fi
 }
 
 setup_agent_directory() {
@@ -153,11 +110,6 @@ setup_agent_directory() {
         log_success "Rules installed: $(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l) rules"
     fi
 }
-
-
-# ============================================================
-# Validation Functions
-# ============================================================
 
 validate_installation() {
     log_info "Validating installation..."
@@ -197,10 +149,6 @@ validate_installation() {
     return $errors
 }
 
-# ============================================================
-# Uninstall Function
-# ============================================================
-
 uninstall_agent() {
     log_info "Uninstalling OMP agent setup..."
     
@@ -217,10 +165,6 @@ uninstall_agent() {
         log_info "Agent directory not found, nothing to remove"
     fi
 }
-
-# ============================================================
-# List Skills
-# ============================================================
 
 list_skills() {
     log_info "Available skills:"
@@ -240,10 +184,6 @@ list_skills() {
         log_warning "No skills directory found"
     fi
 }
-
-# ============================================================
-# Main Function
-# ============================================================
 
 main() {
     local dry_run=false
@@ -282,12 +222,6 @@ main() {
         shift
     done
     
-    echo ""
-    echo "╔══════════════════════════════════════════════════════════╗"
-    echo "║         OMP Agentic Setup - Automated Installation     ║"
-    echo "╚══════════════════════════════════════════════════════════╝"
-    echo ""
-    
     if [[ "$dry_run" == true ]]; then
         log_info "Would perform the following:"
         log_info "  - Install system dependencies"
@@ -295,7 +229,6 @@ main() {
         log_info "  - Copy AGENTS.md"
         log_info "  - Install $(find "${SCRIPT_DIR}/.agents/skills" -name "SKILL.md" 2>/dev/null | wc -l) skills"
         log_info "  - Install $(find "${SCRIPT_DIR}/.agents/rules" -name '*.md' 2>/dev/null | wc -l) rules"
-        log_info "  - Install git hooks"
         return 0
     fi
     
@@ -305,7 +238,6 @@ main() {
     fi
     
     setup_agent_directory
-    install_git_hooks
     
     echo ""
     validate_installation

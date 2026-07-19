@@ -115,8 +115,6 @@ install_dependencies() {
 install_git_hooks() {
     log_info "Installing git hooks..."
     
-    local hook_dir="${SCRIPT_DIR}/.git/hooks"
-    
     if [[ -d "${SCRIPT_DIR}/.git" ]]; then
         # Copy pre-commit hook if it exists
         if [[ -f "${SCRIPT_DIR}/scripts/pre-commit" ]]; then
@@ -147,13 +145,13 @@ setup_agent_directory() {
     # Copy skills
     if [[ -d "${SCRIPT_DIR}/.agents/skills" ]]; then
         cp -r "${SCRIPT_DIR}/.agents/skills/"* "${AGENT_DIR}/skills/"
-        log_success "Skills installed: $(ls "${AGENT_DIR}/skills/" | wc -l) skills"
+        log_success "Skills installed: $(find "${AGENT_DIR}/skills" -name SKILL.md 2>/dev/null | wc -l) skills"
     fi
     
     # Copy rules
     if [[ -d "${SCRIPT_DIR}/.agents/rules" ]]; then
         cp -r "${SCRIPT_DIR}/.agents/rules/"* "${AGENT_DIR}/rules/"
-        log_success "Rules installed: $(ls "${AGENT_DIR}/rules/" | wc -l) rules"
+        log_success "Rules installed: $(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l) rules"
     fi
 }
 
@@ -192,7 +190,7 @@ validate_installation() {
     # Check rules
     if [[ -d "${AGENT_DIR}/rules" ]]; then
         local rule_count=0
-        rule_count=$(ls "${AGENT_DIR}/rules"/*.md 2>/dev/null | wc -l || echo 0)
+        rule_count=$(find "${AGENT_DIR}/rules" -name '*.md' 2>/dev/null | wc -l || echo 0)
         
         log_success "Rules directory ready (${rule_count} rules)"
     fi
@@ -259,7 +257,6 @@ main() {
                 exit 0
                 ;;
             -v|--verbose)
-                VERBOSE=true
                 set -x
                 ;;
             -s|--skip-system)
@@ -298,7 +295,7 @@ main() {
         log_info "  - Set up agent directory at ${AGENT_DIR}"
         log_info "  - Copy AGENTS.md"
         log_info "  - Install $(find "${SCRIPT_DIR}/.agents/skills" -name "SKILL.md" 2>/dev/null | wc -l) skills"
-        log_info "  - Install $(ls "${SCRIPT_DIR}/.agents/rules"/*.md 2>/dev/null | wc -l) rules"
+        log_info "  - Install $(find "${SCRIPT_DIR}/.agents/rules" -name '*.md' 2>/dev/null | wc -l) rules"
         log_info "  - Install git hooks"
         return 0
     fi

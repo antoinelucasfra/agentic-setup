@@ -1,14 +1,2 @@
 {
-  "skills": {
-    "ignoredSkills": [
-      "breakdown-*",
-      "create-implementation-plan",
-      "update-implementation-plan",
-      "refactor-plan",
-      "context-map",
-      "context-architect",
-      "create-github-issues-*",
-      "structured-autonomy-plan"
-    ]
-  }
 }

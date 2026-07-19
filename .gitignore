@@ -1,0 +1,5 @@
+# OMP agentic-setup — only curated content in version control
+# Generated/runtime files stay out.
+
+*.log
+.DS_Store

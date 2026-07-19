@@ -16,7 +16,6 @@ NC='\033[0m' # No Color
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 AGENT_DIR="${HOME}/.agents"
-VERBOSE=false
 SKIP_SYSTEM_CHECKS=false
 
 # ============================================================

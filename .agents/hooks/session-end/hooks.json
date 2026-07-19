@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": ".agents/hooks/session-end/auto-commit.sh",
+        "timeoutSec": 30
+      }
+    ]
+  }
+}

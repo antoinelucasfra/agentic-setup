@@ -18,7 +18,6 @@ cd agentic-setup
 ./setup.sh --list-skills   # List available skills
 ./setup.sh --uninstall     # Remove setup
 
-make validate              # Dry-run check
 ```
 
 ## Contents
@@ -27,7 +26,7 @@ make validate              # Dry-run check
 - `.agents/AGENTS.md` — global instructions for the OMP agent
 - `.agents/skills/` — 44 agent skill definitions
 - `.agents/rules/` — code quality guidelines
-- `docs/SETUP.md` — device-specific setup guide (Linux, macOS, WSL2)
+- `docs/SETUP.md` — platform setup guide
 - `docs/CONTRIBUTING.md` — how to add skills
 
 ## Requirements

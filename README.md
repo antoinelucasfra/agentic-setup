@@ -1,7 +1,7 @@
 # agentic-setup
 
 Default OMP agent config folder — lives at `~/.agents/` in your home
-directory. Skills, rules, hooks, and global instructions the OMP coding
+directory. Skills, rules, and global instructions the OMP coding
 agent loads on every session. The repo IS the folder (no symlink, no copy).
 
 ## Prerequisites — install OMP
@@ -32,7 +32,6 @@ dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
 | `AGENTS.md` | Global agent instructions (always loaded) |
 | `skills/` | 80 skills |
 | `rules/` | 3 coding rules |
-| `hooks/session-end/` | Disabled auto-commit + PR hook |
 | `scripts/setup.sh` | CLI dependency installer |
 | `omp-manifest.yml` | Plugins, settings, extensions manifest |
 
@@ -46,26 +45,3 @@ dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
 | `air` | recommended | R code formatting (`git-workflow` skill) | `cargo install air` or [GH release](https://github.com/posit-dev/air) |
 | `jarl` | recommended | R code linting | `cargo install jarl` or [GH release](https://github.com/posit-dev/jarl) |
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |
-
-
-## Daily workflow
-
-Because `~/.agents` *is* the repo, any change shows up as an uncommitted file
-there. Commit and push:
-
-```bash
-cd ~/.agents
-git add -A && git commit -m "chore: update config $(date +%Y%m%d)" && git push
-```
-
-## Tree
-
-```
-~/.agents/
-├── AGENTS.md               # Global agent instructions
-├── rules/                  # 3 coding rules
-├── hooks/session-end/      # Disabled auto-commit + PR hook
-├── scripts/setup.sh        # CLI dependency installer
-├── omp-manifest.yml        # Plugin and settings manifest
-└── skills/                 # 80 skills
-```

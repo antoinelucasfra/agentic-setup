@@ -1,5 +1,5 @@
 # OMP Device Manifest — single source of truth for OMP config
-# Used by omp-bootstrap.sh to set up a new device.
+# Used by bootstrap.sh to set up a new device.
 #
 # Four sections:
 #   marketplaces — plugin registries to subscribe to

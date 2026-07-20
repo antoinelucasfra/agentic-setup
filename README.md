@@ -18,7 +18,7 @@ See the [OMP quickstart](https://omp.sh/docs/quickstart) for other install metho
 ## One-shot device bootstrap
 
 ```bash
-curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh | bash
+curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/bootstrap.sh | bash
 ```
 
 That command clones this repo into `~/.agents/`, then installs CLI
@@ -31,7 +31,7 @@ dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
 |---|---|
 | `AGENTS.md` | Global agent instructions (always loaded) |
 | `skills/` | 80 skills |
-| `rules/` | 2 coding rules |
+| `rules/` | 3 coding rules |
 | `hooks/session-end/` | Disabled auto-commit + PR hook |
 | `scripts/setup.sh` | CLI dependency installer |
 | `omp-manifest.yml` | Plugins, settings, extensions manifest |
@@ -46,7 +46,6 @@ dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
 | `air` | recommended | R code formatting (`git-workflow` skill) | `cargo install air` or [GH release](https://github.com/posit-dev/air) |
 | `jarl` | recommended | R code linting | `cargo install jarl` or [GH release](https://github.com/posit-dev/jarl) |
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |
-| `prek` | recommended | pre-commit hook runner (project-level) | install per-project via `pip install prek` or `cargo install prek` |
 
 
 ## Daily workflow
@@ -64,7 +63,7 @@ git add -A && git commit -m "chore: update config $(date +%Y%m%d)" && git push
 ```
 ~/.agents/
 ├── AGENTS.md               # Global agent instructions
-├── rules/                  # 2 coding rules
+├── rules/                  # 3 coding rules
 ├── hooks/session-end/      # Disabled auto-commit + PR hook
 ├── scripts/setup.sh        # CLI dependency installer
 ├── omp-manifest.yml        # Plugin and settings manifest

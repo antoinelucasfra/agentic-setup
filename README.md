@@ -13,8 +13,7 @@ npm install -g @oh-my-pi/pi-coding-agent
 # or via bun:  bun install -g @oh-my-pi/pi-coding-agent
 ```
 
-See the [OMP installation guide](https://oh-my-pi.com/docs/install) for
-other methods (curl, brew, scoop, docker).
+See the [OMP quickstart](https://omp.sh/docs/quickstart) for other install methods (curl, brew, scoop, docker).
 
 ## One-shot device bootstrap
 

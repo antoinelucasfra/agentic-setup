@@ -7,20 +7,10 @@ synced across devices via a symlink.
 
 | Path | What |
 |---|---|
-| `omp-manifest.yml` | Marketplaces, plugins, OMP settings, extension configs |
-| `.agents/AGENTS.md` | Global agent instructions |
-| `.agents/settings.json` | Agent settings |
-| `.agents/skills/` | 90 skills |
-| `.agents/agents/` | 16 task agent definitions |
-| `.agents/rules/` | 8 coding rules |
-| `.agents/hooks/` | Session auto-commit + PR-assign hook |
-
-## Single source of truth
-
-`~/.agents` is a **symlink** to this repo's `.agents/` directory. There is exactly one
-copy of the config — here. The agent harness reads `~/.agents/...` and transparently
-resolves into this repository, so changes the harness makes (new skills, agents, hook
-edits) land directly in the repo. No copy/rsync step, so the two can never drift.
+| `.agents/skills/` | 31 skills |
+| `.agents/agents/` | 4 task agent definitions |
+| `.agents/rules/` | 4 coding rules (commit-workflow + 3 general) |
+| `.agents/hooks/` | Session auto-commit hook |
 
 ## Device Setup
 
@@ -55,18 +45,12 @@ On another device, just pull — the symlink already points at the cloned repo:
 cd ~/project/agentic-setup && git pull
 ```
 
-## Structure
-
 ```
-agentic-setup/              # git repo = single source of truth (clone anywhere)
-├── omp-manifest.yml        # OMP device bootstrap (plugins/settings)
-├── README.md
-├── .gitignore
-└── .agents/                # <- symlinked from ~/.agents
-    ├── AGENTS.md           # Global agent instructions
-    ├── settings.json       # Empty (OMP reads ~/.omp/agent/config.yml)
-    ├── agents/             # 16 task agent definitions
-    ├── rules/              # 8 coding rules
-    ├── hooks/session-end/  # Auto-commit + PR-assign hook
-    └── skills/             # 90 skills
+~/.agents/                  # User-global OMP config (every session)
+├── AGENTS.md               # Global agent instructions
+├── settings.json           # Empty (OMP reads ~/.omp/agent/config.yml)
+├── agents/                 # 4 task agent definitions
+├── rules/                  # 4 coding rules
+├── hooks/session-end/      # Auto-commit hook
+└── skills/                 # 31 skills
 ```

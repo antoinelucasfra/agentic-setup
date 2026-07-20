@@ -1,58 +1,74 @@
 ---
-name: breakdown-epic-pm
-description: 'Prompt for creating an Epic Product Requirements Document (PRD) for a new epic. This PRD will be used as input for generating a technical architecture specification.'
+name: breakdown-prd
+description: 'Prompt for creating Product Requirements Documents (PRDs) for epics or features. Use this skill for both epic-level and feature-level PRDs.'
 ---
 
-# Epic Product Requirements Document (PRD) Prompt
+# Product Requirements Document (PRD) Prompt
 
 ## Goal
 
-Act as an expert Product Manager for a large-scale SaaS platform. Your primary responsibility is to translate high-level ideas into detailed Epic-level Product Requirements Documents (PRDs). These PRDs will serve as the single source of truth for the engineering team and will be used to generate a comprehensive technical architecture specification for the epic.
+Act as an expert Product Manager. Translate high-level ideas into detailed Product Requirements Documents (PRDs). These PRDs serve as the single source of truth and are used to generate a comprehensive technical specification.
 
-Review the user's request for a new epic and generate a thorough PRD. If you don't have enough information, ask clarifying questions to ensure all aspects of the epic are well-defined.
+Review the user's request and generate a thorough PRD. If you don't have enough information, ask clarifying questions.
 
 ## Output Format
 
-The output should be a complete Epic PRD in Markdown format, saved to `/docs/ways-of-work/plan/{epic-name}/epic.md`.
+Output a complete PRD in Markdown format. The scope (epic vs feature) determines the save path:
 
-### PRD Structure
+- **Epic PRD**: `/docs/ways-of-work/plan/{epic-name}/epic.md`
+- **Feature PRD**: `/docs/ways-of-work/plan/{epic-name}/{feature-name}/prd.md`
 
-#### 1. Epic Name
+### Common Sections (both epic and feature PRDs)
 
-- A clear, concise, and descriptive name for the epic.
+#### 1. Name
+
+A clear, concise, descriptive name.
 
 #### 2. Goal
 
-- **Problem:** Describe the user problem or business need this epic addresses (3-5 sentences).
-- **Solution:** Explain how this epic solves the problem at a high level.
-- **Impact:** What are the expected outcomes or metrics to be improved (e.g., user engagement, conversion rate, revenue)?
+- **Problem:** The user problem or business need (3-5 sentences).
+- **Solution:** How this solves the problem at a high level.
+- **Impact:** Expected outcomes or improved metrics.
 
 #### 3. User Personas
 
-- Describe the target user(s) for this epic.
+Describe the target user(s).
 
-#### 4. High-Level User Journeys
+#### 4. Requirements
 
-- Describe the key user journeys and workflows enabled by this epic.
+- **Functional Requirements:** Detailed, bulleted list of what must be delivered.
+- **Non-Functional Requirements:** Constraints and quality attributes (e.g., performance, security, accessibility, data privacy).
 
-#### 5. Business Requirements
+#### 5. Out of Scope
 
-- **Functional Requirements:** A detailed, bulleted list of what the epic must deliver from a business perspective.
-- **Non-Functional Requirements:** A bulleted list of constraints and quality attributes (e.g., performance, security, accessibility, data privacy).
+What is _not_ included to avoid scope creep.
 
-#### 6. Success Metrics
+### Epic-Only Sections
 
-- Key Performance Indicators (KPIs) to measure the success of the epic.
+#### 6. High-Level User Journeys
 
-#### 7. Out of Scope
+Key workflows enabled by this epic.
 
-- Clearly list what is _not_ included in this epic to avoid scope creep.
+#### 7. Success Metrics (KPIs)
+
+How success is measured.
 
 #### 8. Business Value
 
-- Estimate the business value (e.g., High, Medium, Low) with a brief justification.
+High/Medium/Low with justification.
+
+### Feature-Only Sections
+
+#### 6. User Stories
+
+"As a `<user persona>`, I want to `<perform an action>` so that I can `<achieve a benefit>`."
+
+#### 7. Acceptance Criteria
+
+For each user story or major requirement. Use Given/When/Then or checklist format.
 
 ## Context Template
 
-- **Epic Idea:** [A high-level description of the epic from the user]
-- **Target Users:** [Optional: Any initial thoughts on who this is for]
+- **Epic Idea / Feature Idea:** [High-level description of the request]
+- **Parent Epic:** [Link to parent Epic PRD, if feature]
+- **Target Users:** [Optional]

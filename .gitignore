@@ -1,4 +1,4 @@
-# OMP agentic-setup — only curated content in version control
+# omp-setup — only curated content in version control
 # Generated/runtime files stay out.
 
 *.log

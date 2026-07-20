@@ -4,7 +4,7 @@
     "sessionEnd": [
       {
         "type": "command",
-        "bash": ".agents/hooks/session-end/auto-commit.sh",
+        "bash": "hooks/session-end/auto-commit.sh",
         "timeoutSec": 30
       }
     ]

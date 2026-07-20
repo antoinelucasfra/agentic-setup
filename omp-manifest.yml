@@ -1,10 +1,11 @@
 # OMP Device Manifest — single source of truth for OMP config
 # Used by omp-bootstrap.sh to set up a new device.
 #
-# Three sections:
+# Four sections:
 #   marketplaces — plugin registries to subscribe to
 #   plugins     — what to install from those marketplaces + npm
 #   settings    — OMP settings written to ~/.omp/agent/config.yml
+#   extensions  — per-plugin configs written to ~/.omp/agent/extensions/<name>/config.json
 
 marketplaces:
   - source: anthropics/claude-plugins-official
@@ -16,10 +17,27 @@ plugins:
   # Marketplace plugins (installed via `omp plugin install <id>`)
   - id: analytics@python-analytics-skills
   - id: context7@claude-plugins-official
+  - id: github@claude-plugins-official
+  - id: claude-md-management@claude-plugins-official
+  - id: data@claude-plugins-official
+  - id: duckdb-skills@claude-plugins-official
+  - id: code-review@claude-plugins-official
+  - id: code-simplifier@claude-plugins-official
+  - id: skill-creator@claude-plugins-official
+  - id: session-report@claude-plugins-official
+  - id: remember@claude-plugins-official
+  - id: firecrawl@claude-plugins-official
+  - id: hookify@claude-plugins-official
+  - id: claude-code-setup@claude-plugins-official
+  - id: pr-review-toolkit@claude-plugins-official
 
   # NPM packages (installed via `omp plugin install <package>`)
   - id: npm:@dietrichgebert/ponytail
   - id: npm:pi-rtk-optimizer
+  - id: npm:omp-cache-optimizer
+  - id: npm:omp-headroom
+  - id: npm:omp-mode-switch
+  - id: npm:@oh-my-pi/omp-stats
 
 settings:
   symbolPreset: unicode

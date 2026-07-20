@@ -146,12 +146,6 @@ try "yq" system "yq" "$([ "$pkg_manager" = winget ] && echo 'MikeFarah.yq' || ec
 echo ""
 echo "=== Recommended tools ==="
 
-# air — R formatter CLI
-try "air" cargo
-
-# jarl — R linter CLI
-try "jarl" cargo
-
 # ruff — Python linter
 try "ruff" uv
 

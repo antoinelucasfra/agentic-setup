@@ -16,6 +16,7 @@ no symlink, no copy step, and no drift between the two.
 | `rules/` | 2 coding rules |
 | `hooks/session-end/` | Auto-commit + PR hook |
 | `scripts/` | Setup helpers |
+| `omp-manifest.yml` | OMP device manifest — plugins, settings, extensions |
 
 ## Dependencies
 
@@ -61,22 +62,36 @@ Rscript scripts/install-r-deps.R
 # 1. Clone the repo directly into the global config path
 git clone https://github.com/antoinelucasfra/agentic-setup.git ~/.agents
 
-# 2. Run the dependency installer (idempotent — safe to re-run)
+# 2. Install CLI dependencies (idempotent — safe to re-run)
 bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh)
 
-# 3. Install R packages (if you work with R projects)
-Rscript ~/.agents/scripts/install-r-deps.R
+# 3. Apply OMP manifest — plugins, settings, extensions
+bash ~/.agents/scripts/apply-manifest.sh
 
-# 4. (Optional) Apply the OMP manifest — plugins, settings, extensions.
-#    This is device-local tooling config, separate from the agent config above.
-yq eval '.settings' ~/.agents/omp-manifest.yml > ~/.omp/agent/config.yml
-yq eval '.marketplaces[].source' ~/.agents/omp-manifest.yml \
-  | xargs -I{} omp plugin marketplace add "{}" 2>/dev/null
-yq eval '.plugins[].id' ~/.agents/omp-manifest.yml \
-  | xargs -I{} omp plugin install "{}" 2>/dev/null
+# 4. Install R packages (if you work with R projects)
+Rscript ~/.agents/scripts/install-r-deps.R
 ```
 
 That's it. A new clone at `~/.agents` is immediately the live agent config.
+
+## OMP manifest
+
+`omp-manifest.yml` is the single source of truth for your OMP installation.
+It controls:
+
+- **Model roles** — which model to use for default, plan, smol, slow tasks
+- **Theme** — color scheme and symbol preset
+- **Plugins** — marketplace skills and npm packages (ponytail, rtk optimizer, etc.)
+- **Extension configs** — per-plugin settings (rtk output compaction, etc.)
+
+Edit `omp-manifest.yml` to personalize your OMP setup, then re-run:
+
+```bash
+bash ~/.agents/scripts/apply-manifest.sh
+```
+
+The script is idempotent — it only adds missing marketplaces and plugins, and
+overwrites settings and extension configs on each run.
 
 ## Daily workflow
 
@@ -98,5 +113,6 @@ opens/assigns a PR to the owner — so routine edits rarely need manual git.
 ├── hooks/session-end/      # Auto-commit + PR hook
 ├── scripts/                # Setup helpers
 │   └── install-r-deps.R    # R package installer
+├── omp-manifest.yml        # OMP device manifest
 └── skills/                 # 80 skills
 ```

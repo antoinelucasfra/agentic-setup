@@ -1,8 +1,8 @@
-# agentic-setup
+# omp-setup
 
-Default OMP agent config folder — lives at `~/.agents/` in your home
-directory. Skills, rules, and global instructions the OMP coding
-agent loads on every session. The repo IS the folder (no symlink, no copy).
+Opiniated OMP coding agent configuration — lives at `~/.agents/` in your home
+Skills, rules, and global instructions the OMP coding agent loads on
+every session. The repo IS the folder (no symlink, no copy).
 
 ## Prerequisites — install OMP
 
@@ -18,12 +18,10 @@ See the [OMP quickstart](https://omp.sh/docs/quickstart) for other install metho
 ## One-shot device bootstrap
 
 ```bash
-curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/bootstrap.sh | bash
+curl -sL https://raw.githubusercontent.com/antoinelucasfra/omp-setup/main/scripts/bootstrap.sh | bash
 ```
 
 That command clones this repo into `~/.agents/`, then installs CLI
-dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
-(plugins, settings). All operations are idempotent — safe to re-run.
 
 ## Contents
 

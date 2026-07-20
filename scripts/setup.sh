@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# OMP agentic-setup — CLI dependency installer
+# omp-setup — CLI dependency installer
 #
 # Idempotent: safe to re-run. Skips already-installed tools.
 # Works on Linux (apt/pacman) and Windows (scoop/winget/choco via Git Bash).
 #
 # Usage: bash scripts/setup.sh
-#        bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh)
+#        bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/omp-setup/main/scripts/setup.sh)
 
 set -euo pipefail
 

@@ -41,4 +41,5 @@ That command clones this repo into `~/.agents/`, then installs CLI
 | `uv` | yes | Python project gates (ruff, pytest) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | `yq` | yes | applying OMP manifest settings | system / brew / scoop / `pip install yq` |
 | `air` | recommended | R code formatting (`git-workflow` skill) | `uv tool install air-formatter` or [GH release](https://github.com/posit-dev/air) |
+| `jarl` | recommended | R code linting | `curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh \| sh` or [GH release](https://github.com/etiennebacher/jarl) |
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |

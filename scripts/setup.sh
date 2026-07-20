@@ -80,58 +80,31 @@ warn()  { echo "  [warn] $*"; }
 # Ensure common cargo/user bin dirs are on PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
-# ---- Try system package manager install ----
-try_install() {
-  local name="$1"
-  local pkg="${2:-$1}"   # package name may differ from binary name
-  local bin="${3:-$1}"   # binary to check
+# ---- Unified installer (method: system|cargo|uv) ----
+try() {
+  local name="$1" method="$2"
+  local bin="${3:-$name}" pkg="${4:-$name}"
 
-  if command -v "$bin" &>/dev/null; then
-    skip "$name"
-    return 0
-  fi
-  if [[ -z "$install_cmd" ]]; then
-    warn "No package manager — install $name manually"
-    return 1
-  fi
-  info "Installing $name via $pkg_manager ..."
-  $sudo_prefix $install_cmd "$pkg" 2>/dev/null && { ok "$name"; return 0; }
-  warn "Package manager install failed for $name"
-  return 1
-}
+  command -v "$bin" &>/dev/null && { skip "$name"; return 0; }
 
-# ---- Try cargo install ----
-try_cargo() {
-  local name="$1"
-  local bin="${2:-$1}"
-  if command -v "$bin" &>/dev/null; then
-    skip "$name"
-    return 0
-  fi
-  if command -v cargo &>/dev/null; then
-    info "Installing $name via cargo ..."
-    cargo install "$name" 2>/dev/null && { ok "$name"; return 0; }
-    warn "cargo install $name failed"
-    return 1
-  fi
-  warn "cargo not found — install $name manually"
-  return 1
-}
-
-# ---- Try uv tool install ----
-try_uv_tool() {
-  local name="$1"
-  if command -v "$name" &>/dev/null; then
-    skip "$name"
-    return 0
-  fi
-  if command -v uv &>/dev/null; then
-    info "Installing $name via uv ..."
-    uv tool install "$name" 2>/dev/null && { ok "$name"; return 0; }
-    warn "uv tool install $name failed"
-    return 1
-  fi
-  warn "uv not found — skipping $name"
+  case "$method" in
+    system)
+      [[ -z "$install_cmd" ]] && { warn "No package manager — install $name manually"; return 1; }
+      info "Installing $name via $pkg_manager ..."
+      $sudo_prefix $install_cmd "$pkg" 2>/dev/null && { ok "$name"; return 0; }
+      ;;
+    cargo)
+      command -v cargo &>/dev/null || { warn "cargo not found — install $name manually"; return 1; }
+      info "Installing $name via cargo ..."
+      cargo install "$name" 2>/dev/null && { ok "$name"; return 0; }
+      ;;
+    uv)
+      command -v uv &>/dev/null || { warn "uv not found — install $name manually"; return 1; }
+      info "Installing $name via uv ..."
+      uv tool install "$name" 2>/dev/null && { ok "$name"; return 0; }
+      ;;
+  esac
+  warn "$method install $name failed"
   return 1
 }
 # ================================================================
@@ -140,7 +113,7 @@ try_uv_tool() {
 echo ""
 echo "=== Required tools ==="
 
-try_install "gh" "$([ "$pkg_manager" = winget ] && echo 'GitHub.cli' || echo 'gh')" "gh"
+try "gh" system "gh" "$([ "$pkg_manager" = winget ] && echo 'GitHub.cli' || echo 'gh')"
 
 # uv — Python package manager
 if ! command -v uv &>/dev/null; then
@@ -165,7 +138,7 @@ if ! command -v uv &>/dev/null; then
   export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 fi
 
-try_install "yq" "$([ "$pkg_manager" = winget ] && echo 'MikeFarah.yq' || echo 'yq')" "yq"
+try "yq" system "yq" "$([ "$pkg_manager" = winget ] && echo 'MikeFarah.yq' || echo 'yq')"
 
 # ================================================================
 # Phase 2: Recommended tools
@@ -174,13 +147,13 @@ echo ""
 echo "=== Recommended tools ==="
 
 # air — R formatter CLI
-try_cargo "air"
+try "air" cargo
 
 # jarl — R linter CLI
-try_cargo "jarl"
+try "jarl" cargo
 
 # ruff — Python linter
-try_uv_tool "ruff"
+try "ruff" uv
 
 echo ""
 echo "=== Done ==="

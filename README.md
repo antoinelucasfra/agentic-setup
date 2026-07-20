@@ -33,19 +33,8 @@ ones; R packages are installed separately via `scripts/install-r-deps.R`.
 | `jarl` | recommended | R code linting | `cargo install jarl` or [GH release](https://github.com/posit-dev/jarl) |
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |
 | `prek` | recommended | pre-commit hook runner (project-level) | install per-project via `pip install prek` or `cargo install prek` |
-| `quarto` | optional | site rendering (`antoinelucasfra.github.io`) | system / brew / scoop |
-| `eza` | optional | directory tree (`AGENTS.md` recommends) | system / brew / cargo |
-| `bat` | optional | file viewing with highlighting | system / brew / cargo |
-| `delta` | optional | human-readable diffs | system / brew / cargo |
-| `sd` | optional | find/replace in pipelines | cargo / brew |
-| `dog` | optional | DNS lookups | cargo / brew |
-| `trippy` | optional | network path diagnosis | cargo / brew |
-| `tldr` / `cheat` | optional | condensed man pages | npm / pip / brew |
-| `dust` | optional | disk usage | cargo / brew |
-| `duf` | optional | filesystem free | system / brew |
-| `ouch` | optional | archive create/extract | cargo / brew |
-| `procs` / `btm` | optional | process inspection | cargo / brew |
-| `jq` | optional | JSON query | system / brew |
+
+For optional modern CLI tools (`eza`, `bat`, `delta`, `sd`, `jq`, ...), see the [modern CLI replacements table in AGENTS.md](AGENTS.md#modern-cli-over-legacy-utilities).
 
 ### R packages (installed via `scripts/install-r-deps.R`)
 

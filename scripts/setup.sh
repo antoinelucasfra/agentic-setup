@@ -78,7 +78,7 @@ skip()  { echo "  [skip] $* (already installed)"; }
 warn()  { echo "  [warn] $*"; }
 
 # Ensure common cargo/user bin dirs are on PATH
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
 # ---- Try system package manager install ----
 try_install() {
@@ -134,37 +134,26 @@ try_uv_tool() {
   warn "uv not found — skipping $name"
   return 1
 }
-
-# ---- Platform-specific package name mapping ----
-pkg_name() {
-  local tool="$1"
-  # Some tools have different package names across managers
-  case "$pkg_manager-$tool" in
-    winget-gh)     echo "GitHub.cli" ;;
-    winget-yq)     echo "MikeFarah.yq" ;;
-    winget-jq)     echo "jqlang.jq" ;;
-    winget-tldr)   echo "tldr-pages.tldr" ;;
-    scoop-delta)   echo "git-delta" ;;
-    scoop-tldr)    echo "tldr" ;;
-    *)             echo "$tool" ;;
+# Map package name to platform-specific name.
+pmap() {
+  local n="$1"
+  case "$pkg_manager-$n" in
+    winget-gh)     echo "GitHub.cli";;
+    winget-yq)     echo "MikeFarah.yq";;
+    winget-jq)     echo "jqlang.jq";;
+    winget-tldr)   echo "tldr-pages.tldr";;
+    scoop-delta)   echo "git-delta";;
+    scoop-tldr)    echo "tldr";;
+    *)             echo "$n";;
   esac
 }
-
-# ---- Try install with platform-mapped package name ----
-try_pkg() {
-  local tool="$1"
-  local pkg; pkg=$(pkg_name "$tool")
-  try_install "$tool" "$pkg" "$tool"
-}
-
 # ================================================================
 # Phase 1: Required CLI tools
 # ================================================================
 echo ""
 echo "=== Required tools ==="
 
-# gh — GitHub CLI
-try_pkg "gh"
+try_install "gh" "$(pmap gh)" "gh"
 
 # uv — Python package manager
 if ! command -v uv &>/dev/null; then
@@ -189,8 +178,7 @@ if ! command -v uv &>/dev/null; then
   export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 fi
 
-# yq — YAML processor
-try_pkg "yq"
+try_install "yq" "$(pmap yq)" "yq"
 
 # ================================================================
 # Phase 2: Recommended tools
@@ -206,29 +194,6 @@ try_cargo "jarl"
 
 # ruff — Python linter
 try_uv_tool "ruff"
-
-# ================================================================
-# Phase 3: Optional modern CLI replacements
-# ================================================================
-echo ""
-echo "=== Optional modern CLI tools ==="
-
-# Tools available via package managers on most platforms
-try_pkg    "eza"
-try_cargo  "bat"     "bat"    || try_pkg "bat"
-try_cargo  "delta"   "delta"  || try_pkg "delta"
-try_cargo  "sd"      "sd"     || true
-try_pkg    "jq"
-
-# Tools more likely via cargo
-try_cargo  "dog"     || true
-try_cargo  "trippy"  || true
-try_cargo  "dust"    "dust"   || try_pkg "dust"
-try_pkg    "duf"     || true
-try_cargo  "ouch"    "ouch"   || try_pkg "ouch"
-try_cargo  "procs"   "procs"  || try_pkg "procs"
-try_cargo  "tldr"    "tldr"   || try_pkg "tldr"
-try_cargo  "bottom"  "btm"    || true   # btm = bottom
 
 echo ""
 echo "=== Done ==="

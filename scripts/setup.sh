@@ -134,26 +134,13 @@ try_uv_tool() {
   warn "uv not found — skipping $name"
   return 1
 }
-# Map package name to platform-specific name.
-pmap() {
-  local n="$1"
-  case "$pkg_manager-$n" in
-    winget-gh)     echo "GitHub.cli";;
-    winget-yq)     echo "MikeFarah.yq";;
-    winget-jq)     echo "jqlang.jq";;
-    winget-tldr)   echo "tldr-pages.tldr";;
-    scoop-delta)   echo "git-delta";;
-    scoop-tldr)    echo "tldr";;
-    *)             echo "$n";;
-  esac
-}
 # ================================================================
 # Phase 1: Required CLI tools
 # ================================================================
 echo ""
 echo "=== Required tools ==="
 
-try_install "gh" "$(pmap gh)" "gh"
+try_install "gh" "$([ "$pkg_manager" = winget ] && echo 'GitHub.cli' || echo 'gh')" "gh"
 
 # uv — Python package manager
 if ! command -v uv &>/dev/null; then
@@ -178,7 +165,7 @@ if ! command -v uv &>/dev/null; then
   export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 fi
 
-try_install "yq" "$(pmap yq)" "yq"
+try_install "yq" "$([ "$pkg_manager" = winget ] && echo 'MikeFarah.yq' || echo 'yq')" "yq"
 
 # ================================================================
 # Phase 2: Recommended tools

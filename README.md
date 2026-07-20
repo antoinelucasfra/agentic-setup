@@ -40,6 +40,5 @@ That command clones this repo into `~/.agents/`, then installs CLI
 | `gh` | yes | PR creation, issue management | system / brew / scoop |
 | `uv` | yes | Python project gates (ruff, pytest) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | `yq` | yes | applying OMP manifest settings | system / brew / scoop / `pip install yq` |
-| `air` | recommended | R code formatting (`git-workflow` skill) | `cargo install air` or [GH release](https://github.com/posit-dev/air) |
-| `jarl` | recommended | R code linting | `cargo install jarl` or [GH release](https://github.com/posit-dev/jarl) |
+| `air` | recommended | R code formatting (`git-workflow` skill) | `uv tool install air-formatter` or [GH release](https://github.com/posit-dev/air) |
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |

@@ -1,11 +1,30 @@
 # agentic-setup
 
-Default OMP agent config folder — lives at `~/.agents/` in the user's home
-directory. Skills, rules, hooks, and global instructions that the OMP coding
-agent loads on every session.
+Default OMP agent config folder — lives at `~/.agents/` in your home
+directory. Skills, rules, hooks, and global instructions the OMP coding
+agent loads on every session. The repo IS the folder (no symlink, no copy).
 
-The repo IS the folder: `~/.agents/` is a git clone of this repo, so there is
-no symlink, no copy step, and no drift between the two.
+## Prerequisites — install OMP
+
+This config requires the **OMP coding agent CLI** (`omp`). Install it first:
+
+```bash
+npm install -g @oh-my-pi/pi-coding-agent
+# or via bun:  bun install -g @oh-my-pi/pi-coding-agent
+```
+
+See the [OMP installation guide](https://oh-my-pi.com/docs/install) for
+other methods (curl, brew, scoop, docker).
+
+## One-shot device bootstrap
+
+```bash
+curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh | bash
+```
+
+That command clones this repo into `~/.agents/`, then installs CLI
+dependencies (gh, uv, yq, air, jarl, ruff) and applies the OMP manifest
+(plugins, settings). All operations are idempotent — safe to re-run.
 
 ## Contents
 
@@ -14,19 +33,14 @@ no symlink, no copy step, and no drift between the two.
 | `AGENTS.md` | Global agent instructions (always loaded) |
 | `skills/` | 80 skills |
 | `rules/` | 2 coding rules |
-| `hooks/session-end/` | Auto-commit + PR hook |
-| `scripts/` | Setup helpers |
+| `hooks/session-end/` | Disabled auto-commit + PR hook |
+| `scripts/setup.sh` | CLI dependency installer |
 
 ## Dependencies
 
-The agent config expects these tools. The setup script below installs the CLI
-ones; R packages are installed separately via `scripts/install-r-deps.R`.
-
-### CLI tools (installed by setup script)
-
 | Tool | Required? | Used for | Install |
 |------|-----------|----------|---------|
-| `gh` | yes | PR creation, issue management, auto-commit hook | system / brew / scoop |
+| `gh` | yes | PR creation, issue management | system / brew / scoop |
 | `uv` | yes | Python project gates (ruff, pytest) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | `yq` | yes | applying OMP manifest settings | system / brew / scoop / `pip install yq` |
 | `air` | recommended | R code formatting (`git-workflow` skill) | `cargo install air` or [GH release](https://github.com/posit-dev/air) |
@@ -34,69 +48,24 @@ ones; R packages are installed separately via `scripts/install-r-deps.R`.
 | `ruff` | recommended | Python linting (`git-workflow` skill) | `uv tool install ruff` |
 | `prek` | recommended | pre-commit hook runner (project-level) | install per-project via `pip install prek` or `cargo install prek` |
 
-For optional modern CLI tools (`eza`, `bat`, `delta`, `sd`, `jq`, ...), see the [modern CLI replacements table in AGENTS.md](AGENTS.md#modern-cli-over-legacy-utilities).
-
-### R packages (installed via `scripts/install-r-deps.R`)
-
-| Package | Used for |
-|---------|----------|
-| `devtools` | `devtools::test()`, `devtools::check()` — commit gates |
-| `testthat` | test runner |
-| `lintr` | `lintr::lint_dir()` — R linting gate |
-| `usethis` | R project automation (referenced across R skills) |
-| `roxygen2` | .Rd documentation generation |
-| `renv` | R dependency management |
-| `pkgdown` | R package site builder |
-| `golem` | Shiny app framework |
-| `withr` | temporary state for tests |
-| `dockerfiler` | Dockerfile generation (golem) |
-
-```bash
-Rscript scripts/install-r-deps.R
-```
-
-## Device setup
-
-```bash
-# 1. Clone the repo directly into the global config path
-git clone https://github.com/antoinelucasfra/agentic-setup.git ~/.agents
-
-# 2. Run the dependency installer (idempotent — safe to re-run)
-bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh)
-
-# 3. Install R packages (if you work with R projects)
-Rscript ~/.agents/scripts/install-r-deps.R
-
-# 4. (Optional) Apply the OMP manifest — plugins, settings, extensions.
-#    This is device-local tooling config, separate from the agent config above.
-yq eval '.settings' ~/.agents/omp-manifest.yml > ~/.omp/agent/config.yml
-yq eval '.marketplaces[].source' ~/.agents/omp-manifest.yml \
-  | xargs -I{} omp plugin marketplace add "{}" 2>/dev/null
-yq eval '.plugins[].id' ~/.agents/omp-manifest.yml \
-  | xargs -I{} omp plugin install "{}" 2>/dev/null
-```
-
-That's it. A new clone at `~/.agents` is immediately the live agent config.
-
 ## Daily workflow
 
-Because `~/.agents` *is* the repo, any change the agent makes shows up as an
-uncommitted file there. Commit and push normally:
+Because `~/.agents` *is* the repo, any change shows up as an uncommitted file
+there. Commit and push:
 
 ```bash
 cd ~/.agents
 git add -A && git commit -m "chore: update config $(date +%Y%m%d)" && git push
 ```
 
-The session-end hook also auto-commits and pushes, and (on a feature branch)
-opens/assigns a PR to the owner — so routine edits rarely need manual git.
+## Tree
 
 ```
-~/.agents/                  # User-global OMP config AND the git repo
+~/.agents/
 ├── AGENTS.md               # Global agent instructions
 ├── rules/                  # 2 coding rules
-├── hooks/session-end/      # Auto-commit + PR hook
-├── scripts/                # Setup helpers
-│   └── install-r-deps.R    # R package installer
+├── hooks/session-end/      # Disabled auto-commit + PR hook
+├── scripts/setup.sh        # CLI dependency installer
+├── omp-manifest.yml        # Plugin and settings manifest
 └── skills/                 # 80 skills
 ```

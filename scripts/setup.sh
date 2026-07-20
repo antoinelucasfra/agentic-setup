@@ -149,6 +149,14 @@ echo "=== Recommended tools ==="
 # ruff — Python linter
 try "ruff" uv
 
+# jarl — R linter CLI (standalone installer)
+if ! command -v jarl &>/dev/null; then
+  info "Installing jarl via standalone installer ..."
+  curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh 2>/dev/null && ok "jarl" || warn "jarl install failed"
+else
+  skip "jarl"
+fi
+
 echo ""
 echo "=== Done ==="
 echo ""

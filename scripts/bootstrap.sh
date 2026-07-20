@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# OMP agentic-setup — one-shot bootstrap for a new device.
+# omp-setup — one-shot bootstrap for a new device.
 #
 # Idempotent. Installs OMP if missing, clones/updates this config,
 # installs CLI deps, and applies the OMP manifest.
 #
 # Usage:
-#   curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/bootstrap.sh | bash
+#   curl -sL https://raw.githubusercontent.com/antoinelucasfra/omp-setup/main/scripts/bootstrap.sh | bash
 
 set -euo pipefail
 
-REPO="https://github.com/antoinelucasfra/agentic-setup.git"
+REPO="https://github.com/antoinelucasfra/omp-setup.git"
 TARGET="${HOME}/.agents"
 
-echo "=== OMP agentic-setup bootstrap ==="
+echo "=== omp-setup bootstrap ==="
 
 # ---- 1. Install OMP if missing ----
 if ! command -v omp &>/dev/null; then

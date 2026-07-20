@@ -1,5 +1,5 @@
 ---
-name: breakdown-prd
+name: breakdown-epic-pm
 description: 'Prompt for creating Product Requirements Documents (PRDs) for epics or features. Use this skill for both epic-level and feature-level PRDs.'
 ---
 

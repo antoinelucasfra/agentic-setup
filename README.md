@@ -14,7 +14,7 @@ no symlink, no copy step, and no drift between the two.
 | `AGENTS.md` | Global agent instructions (always loaded) |
 | `skills/` | 80 skills |
 | `rules/` | 2 coding rules |
-| `hooks/session-end/` | Auto-commit + PR hook |
+| `hooks/session-end/` | Session-end hooks (disabled by default) |
 | `scripts/` | Setup helpers |
 | `omp-manifest.yml` | OMP device manifest — plugins, settings, extensions |
 
@@ -103,14 +103,14 @@ cd ~/.agents
 git add -A && git commit -m "chore: update config $(date +%Y%m%d)" && git push
 ```
 
-The session-end hook also auto-commits and pushes, and (on a feature branch)
-opens/assigns a PR to the owner — so routine edits rarely need manual git.
+The hooks directory is reserved for future use, but session-end auto-commit
+is disabled by default.
 
 ```
 ~/.agents/                  # User-global OMP config AND the git repo
 ├── AGENTS.md               # Global agent instructions
 ├── rules/                  # 2 coding rules
-├── hooks/session-end/      # Auto-commit + PR hook
+├── hooks/session-end/      # Reserved for session-end hooks (disabled)
 ├── scripts/                # Setup helpers
 │   └── install-r-deps.R    # R package installer
 ├── omp-manifest.yml        # OMP device manifest

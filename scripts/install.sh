@@ -130,7 +130,7 @@ fi
 # ---- 6. Install configured pi packages ----
 echo ""
 echo "=== Installing pi packages ==="
-PACKAGES="$(grep -oE '"(npm|git|https?)://?[^"]+"' "$REPO_ROOT/pi/settings.json" | tr -d '"' || true)"
+PACKAGES="$(python -c 'import json,sys;print("\n".join(json.load(open(sys.argv[1])).get("packages",[])))' "$REPO_ROOT/pi/settings.json" 2>/dev/null || true)"
 if ! command -v pi &>/dev/null; then
   warn "pi not on PATH after install — open a new shell, then run:  pi install <package>"
 elif [[ -z "$PACKAGES" ]]; then

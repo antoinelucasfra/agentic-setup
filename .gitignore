@@ -1,5 +1,9 @@
-# omp-setup — only curated content in version control
-# Generated/runtime files stay out.
+# agentic-setup — curated config only in version control
 
+# Runtime / machine state — never commit
 *.log
 .DS_Store
+auth.json
+lastChangelogVersion
+*.bak
+~*.bak

@@ -1,36 +1,28 @@
-# OMP Coding Agent — Global Instructions
+# Project Instructions — this repo
 
-Standing, always-loaded instructions for the OMP coding agent. These apply to
-every project and every session, loaded globally from `~/.agents/AGENTS.md`.
+This repository is **your pi coding harness configuration**, not a code
+project. It is git-clone-installable: new devices clone it and
+`scripts/install.sh` wires it into `~/.pi/agent/`.
 
-## Tool selection (first)
+## Structure (source of truth)
 
-- Prefer the harness's specialized tools — `glob`, `read`, `grep`, `edit`,
-  `write`, `lsp` — over raw shell for listing, searching, and reading files.
-  Do **not** route exploration through `ls` / `find` / `grep` / `cat` in bash.
-- Shell out only when a real subprocess is required (builds, git, docker,
-  data pipelines, inspection).
+- `pi/` — overlay written into `~/.pi/agent/` by `scripts/install.sh`.
+  `pi/AGENTS.md` holds the **global agent instructions**.
+- `skills/` — Agent Skills (agentskills.io spec). pi loads
+  `~/.agents/skills/` natively; install.sh symlinks/copies `skills/` there.
+- `rules/` — reference rules; content is folded into `pi/AGENTS.md`.
+- `scripts/` — `install.sh` (bootstrap/wiring), `setup.sh` (CLI deps).
 
-## RTK — token-optimized CLI (global)
+## Editing rules
 
-**rtk** is a CLI proxy that filters and compresses command outputs, saving
-60–90% tokens. Always prefix shell commands with `rtk`:
-
-```bash
-# Instead of:              Use:
-git status                 rtk git status
-git log -10                rtk git log -10
-cargo test                 rtk cargo test
-docker ps                  rtk docker ps
-kubectl get pods           rtk kubectl pods
-```
-
-### Meta commands (use directly)
-
-```bash
-rtk gain              # Token savings dashboard
-rtk gain --history    # Per-command savings history
-rtk discover          # Find missed rtk opportunities
-rtk proxy <cmd>       # Run raw (no filtering) but track usage
-```
-
+- **Global instructions**: edit `pi/AGENTS.md`, not the root `AGENTS.md`
+  (this file). Root AGENTS.md only documents how to work in this repo.
+- Changes under `pi/` take effect on machines after
+  `git pull && bash scripts/install.sh` in the clone (or re-run install).
+- **No secrets**: never commit API keys or `auth.json`. New providers go in
+  `pi/models.json` with `$ENV_VAR` key references.
+- Keep `scripts/install.sh` idempotent — it may re-run on any machine.
+- Before pushing `skills/` changes, keep the repo in sync with the live
+  `~/.agents/skills/` superset (97 skills).
+- After edits, run `bash scripts/install.sh` on this machine to keep the
+  live `~/.pi/agent/` wired to the repo.

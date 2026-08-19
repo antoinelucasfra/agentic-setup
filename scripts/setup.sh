@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
-# omp-setup — CLI dependency installer
+# agentic-setup — CLI dependency installer
 #
 # Idempotent: safe to re-run. Skips already-installed tools.
-# Works on Linux (apt/pacman) and Windows (scoop/winget/choco via Git Bash).
+# Works on Linux (apt/pacman/dnf/apk/brew) and Windows (scoop/winget/choco via Git Bash).
 #
-# Usage: bash scripts/setup.sh
-#        bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/omp-setup/main/scripts/setup.sh)
+# Usage:
+#   bash scripts/setup.sh
+#   bash <(curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/setup.sh)
 
 set -euo pipefail
 
@@ -24,7 +25,6 @@ sudo_prefix=""
 pkg_manager=""
 
 detect_pkg_manager() {
-  # Windows package managers (checked first in Git Bash)
   if $is_windows; then
     if command -v scoop &>/dev/null; then
       install_cmd="scoop install"
@@ -44,7 +44,6 @@ detect_pkg_manager() {
     return 1
   fi
 
-  # Linux / WSL
   if command -v apt-get &>/dev/null; then
     install_cmd="apt-get install -y"
     sudo_prefix="sudo"
@@ -69,7 +68,7 @@ detect_pkg_manager() {
   fi
 }
 
-detect_pkg_manager || warn "No supported package manager found — will use cargo where possible"
+detect_pkg_manager || warn "No supported package manager found — uv-based installs still work"
 
 # ---- Helpers ----
 info()  { echo "  -> $*"; }
@@ -77,10 +76,9 @@ ok()    { echo "  [ok] $*"; }
 skip()  { echo "  [skip] $* (already installed)"; }
 warn()  { echo "  [warn] $*"; }
 
-# Ensure common cargo/user bin dirs are on PATH
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
-# ---- Unified installer (method: system|cargo|uv) ----
+# ---- Unified installer (method: system|uv) ----
 try() {
   local name="$1" method="$2"
   local bin="${3:-$name}" pkg="${4:-$name}"
@@ -91,68 +89,65 @@ try() {
     system)
       [[ -z "$install_cmd" ]] && { warn "No package manager — install $name manually"; return 1; }
       info "Installing $name via $pkg_manager ..."
-      $sudo_prefix $install_cmd "$pkg" 2>/dev/null && { ok "$name"; return 0; }
-      ;;
-    cargo)
-      command -v cargo &>/dev/null || { warn "cargo not found — install $name manually"; return 1; }
-      info "Installing $name via cargo ..."
-      cargo install "$name" 2>/dev/null && { ok "$name"; return 0; }
+      $sudo_prefix $install_cmd "$pkg" >/dev/null 2>&1 && { ok "$name"; return 0; }
       ;;
     uv)
       command -v uv &>/dev/null || { warn "uv not found — install $name manually"; return 1; }
       info "Installing $name via uv ..."
-      uv tool install "$name" 2>/dev/null && { ok "$name"; return 0; }
+      uv tool install "$name" >/dev/null 2>&1 && { ok "$name"; return 0; }
       ;;
   esac
   warn "$method install $name failed"
   return 1
 }
+
 # ================================================================
-# Phase 1: Required CLI tools
+# Required tools
 # ================================================================
 echo ""
 echo "=== Required tools ==="
 
 try "gh" system "gh" "$([ "$pkg_manager" = winget ] && echo 'GitHub.cli' || echo 'gh')"
 
-# uv — Python package manager
+# uv — Python package manager (installs ruff, air via uv tool)
 if ! command -v uv &>/dev/null; then
   info "Installing uv ..."
   if $is_windows; then
-    # Windows: use PowerShell to run the official installer
-    powershell -Command "irm https://astral.sh/uv/install.ps1 | iex" 2>/dev/null && ok "uv" || warn "uv install failed — run manually:  powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\""
-  else
-    curl -LsSf https://astral.sh/uv/install.sh | sh 2>/dev/null && ok "uv" || warn "uv install failed"
-    # Ensure uv is on PATH for subsequent steps
-    if command -v uv &>/dev/null; then
+if powershell -Command "irm https://astral.sh/uv/install.ps1 | iex" >/dev/null 2>&1; then
       ok "uv"
-    elif [ -f "$HOME/.cargo/bin/uv" ]; then
-      ok "uv (in .cargo/bin)"
-    elif [ -f "$HOME/.local/bin/uv" ]; then
-      ok "uv (in .local/bin)"
     else
-      warn "uv installed but not on PATH — add $HOME/.local/bin to your PATH"
+      warn "uv install failed — run manually:  powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\""
+    fi
+  else
+    if curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null 2>&1; then
+      ok "uv"
+    else
+      warn "uv install failed — run manually:  curl -LsSf https://astral.sh/uv/install.sh | sh"
     fi
   fi
-  # Ensure uv is findable for the rest of the script
   export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 fi
 
-try "yq" system "yq" "$([ "$pkg_manager" = winget ] && echo 'MikeFarah.yq' || echo 'yq')"
-
 # ================================================================
-# Phase 2: Recommended tools
+# Recommended tools
 # ================================================================
 echo ""
 echo "=== Recommended tools ==="
 
-# ruff — Python linter
+# ruff — Python linter/formatter
 try "ruff" uv
+
+# air — R formatter
+try "air" uv "air" "air-formatter"
 
 # jarl — R linter CLI (standalone installer)
 if ! command -v jarl &>/dev/null; then
   info "Installing jarl via standalone installer ..."
-  curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh 2>/dev/null && ok "jarl" || warn "jarl install failed"
+if curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh >/dev/null 2>&1; then
+    ok "jarl"
+  else
+    warn "jarl install failed (needs curl + POSIX shell)"
+  fi
 else
   skip "jarl"
 fi
@@ -161,4 +156,4 @@ echo ""
 echo "=== Done ==="
 echo ""
 echo "  Installed: check the [ok] lines above."
-echo "  Missed some? Install manually or re-run after installing cargo/brew/scoop."
+echo "  Missed some? Install manually or re-run after installing a package manager."

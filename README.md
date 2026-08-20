@@ -9,38 +9,60 @@ each machine.
 
 ## Install on a new device
 
+**Prerequisites:** `git`, `node` + `npm`, and `python` (the installer checks these and warns if any are missing). Internet access required.
+
+**1. Run the installer (one command):**
+
 ```bash
 curl -sL https://raw.githubusercontent.com/antoinelucasfra/agentic-setup/main/scripts/install.sh | bash
 ```
 
-The installer:
+It clones the repo into `~/.agents/`, installs the shared CLI tools (`gh`, `uv`, `jarl`, `air`, `ruff`), then **prompts you which config to install**: `1) pi (recommended)` or `2) omp`.
 
-1. Installs the repo into `~/.agents/` (or pulls if already present)
-2. Installs shared CLI tools (gh, uv, air, jarl, ruff) if missing
-3. **Prompts: install `pi` or `omp` config?** (or pass an argument to skip the prompt)
-4. Wires the chosen config's full set — extensions, skills, rules, packages — into that harness's home
+### Option A — pi (recommended)
 
-Non-interactive:
+At the prompt choose **1**. `install-pi.sh` then:
+
+1. Wires `pi/AGENTS.md`, `settings.json`, `models.json`, `extensions/` into `~/.pi/agent/`
+2. Deploys `pi/skills` (97) → `~/.pi/agent/skills` and `pi/rules` → `~/.pi/agent/rules`
+3. Installs all 14 configured pi packages
+
+**Authenticate** (no credentials ship in the repo):
+
+```bash
+pi /login              # provider key / subscription
+export CMD_API_KEY=... # commandcode provider key — see ~/.pi/agent/models.json
+pi update --models     # refresh model catalogs
+```
+
+Start: `pi`.
+
+### Option B — omp
+
+At the prompt choose **2**. `install-omp.sh` then:
+
+1. Installs the `omp` CLI and `yq`
+2. Applies `omp/omp-manifest.yml` to `~/.omp/agent/` (settings, extension configs, marketplaces, plugins — incl. claude-plugins-official, python-analytics-skills, ponytail, rtk-optimizer)
+3. Wires `omp/AGENTS.md` → `~/.agents/AGENTS.md` and deploys the shared skills → `~/.agents/skills`
+
+**Authenticate:** `omp` then `/login`.
+
+Start: `omp`.
+
+### Non-interactive (skip the prompt)
 
 ```bash
 bash scripts/install.sh pi    # install pi config only
 bash scripts/install.sh omp   # install OMP config only
 ```
 
-The repo clones to `~/.agents/`. Each chosen config is deployed from there.
-
-### After install: authenticate
-
-The repo ships **no credentials**. On each new machine:
+### Update later
 
 ```bash
-pi /login                     # pi: store a provider key/subscription
-export CMD_API_KEY=...        # commandcode provider key (see models.json)
-pi update --models            # refresh model catalogs (pi)
+cd ~/.agents && git pull && bash scripts/install.sh
 ```
 
-(For OMP, run `omp` and `/login` similarly.)
-
+Re-running is idempotent: unchanged files are left alone, changed ones are backed up to `*.bak.<timestamp>` before being wired.
 ## Layout
 
 | Path | Harness | Deployed to | What |

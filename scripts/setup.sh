@@ -115,6 +115,16 @@ try() {
   warn "$method install $name failed"
   return 1
 }
+# ---- Prerequisites (harness installers depend on these) ----
+echo ""
+echo "=== Prerequisites ==="
+for tool in git npm python; do
+  if command -v "$tool" &>/dev/null; then
+    skip "$tool"
+  else
+    warn "$tool not found — required by the harness installers. Install it, then re-run."
+  fi
+done
 
 # ================================================================
 # Required tools

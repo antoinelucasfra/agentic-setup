@@ -75,11 +75,14 @@ up to `*.bak.<timestamp>` before being wired.
 
 | Tool | Used by | Used for | Install |
 | --- | --- | --- | --- |
-| pi CLI | pi | the harness | `npm install -g --ignore-scripts @earendil-works/pi-coding-agent` |
-| omp CLI | omp | the harness | `npm install -g @oh-my-pi/pi-coding-agent` |
+| `git` | both | clone/pull the repo | **prerequisite** — setup.sh checks + warns |
+| `node`+`npm` | both | harness installers | **prerequisite** — setup.sh checks + warns |
+| `python` | both | package extraction | **prerequisite** — setup.sh checks + warns |
+| pi CLI | pi | the harness | `npm install -g --ignore-scripts @earendil-works/pi-coding-agent` (by `install-pi.sh`) |
+| omp CLI | omp | the harness | `npm install -g @oh-my-pi/pi-coding-agent` (by `install-omp.sh`) |
 | `gh` | both | PR/issue management | system / brew / scoop / winget |
 | `uv` | both | Python gates (ruff, pytest) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| `yq` | omp | applying the OMP manifest | `uv tool install yq` / brew / scoop |
+| `yq` | omp | applying the OMP manifest | `uv tool install yq` / brew / scoop (by `install-omp.sh`) |
 | `air` | both | R code formatting | `uv tool install air-formatter` |
 | `jarl` | both | R code linting | `curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh \| sh` |
 | `ruff` | both | Python linting | `uv tool install ruff` |

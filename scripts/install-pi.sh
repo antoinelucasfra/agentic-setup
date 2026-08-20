@@ -15,10 +15,10 @@ PI_HOME="${HOME}/.pi/agent"
 USE_LINK=false
 [[ "${2:-}" == "--link" ]] && USE_LINK=true
 
-info()  { echo "  -> $*"; }
-ok()    { echo "  [ok] $*"; }
-skip()  { echo "  [skip] $*"; }
-warn()  { echo "  [warn] $*"; }
+info() { echo "  -> $*"; }
+ok() { echo "  [ok] $*"; }
+skip() { echo "  [skip] $*"; }
+warn() { echo "  [warn] $*"; }
 
 # ---- 1. pi CLI ----
 if ! command -v pi &>/dev/null; then
@@ -41,10 +41,13 @@ echo ""
 echo "=== Wiring pi config into $PI_HOME ==="
 mkdir -p "$PI_HOME"
 
-wire_file() {  # $1 = repo-relative path, $2 = target path
+wire_file() { # $1 = repo-relative path, $2 = target path
   local src="$REPO_ROOT/$1" dst="$2"
   if [[ -L "$dst" ]]; then
-    ln -sfn "$src" "$dst" 2>/dev/null && { ok "$1 -> $dst"; return 0; }
+    ln -sfn "$src" "$dst" 2>/dev/null && {
+      ok "$1 -> $dst"
+      return 0
+    }
   fi
   if [[ -f "$dst" ]] && ! cmp -s "$src" "$dst"; then
     local bak="$dst.bak.$(date +%Y%m%d%H%M%S)"
@@ -63,14 +66,14 @@ wire_file() {  # $1 = repo-relative path, $2 = target path
   fi
 }
 
-wire_file "pi/AGENTS.md"            "$PI_HOME/AGENTS.md"
-wire_file "pi/settings.json"        "$PI_HOME/settings.json"
-wire_file "pi/models.json"          "$PI_HOME/models.json"
+wire_file "pi/AGENTS.md" "$PI_HOME/AGENTS.md"
+wire_file "pi/settings.json" "$PI_HOME/settings.json"
+wire_file "pi/models.json" "$PI_HOME/models.json"
 mkdir -p "$PI_HOME/extensions/pi-rtk-optimizer"
 wire_file "pi/extensions/pi-rtk-optimizer/config.json" "$PI_HOME/extensions/pi-rtk-optimizer/config.json"
 
 # ---- 3. Deploy pi/skills -> ~/.pi/agent/skills (native pi global skills) ----
-deploy_skills() {  # $1 = source dir, $2 = target dir
+deploy_skills() { # $1 = source dir, $2 = target dir
   local src="$1" dst="$2"
   if [[ -e "$dst" ]] && ! [[ -L "$dst" ]] && diff -rq "$src" "$dst" >/dev/null 2>&1; then
     ok "$(basename "$src") already up to date at $dst"

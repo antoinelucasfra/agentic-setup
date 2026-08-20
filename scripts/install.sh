@@ -14,19 +14,19 @@
 set -euo pipefail
 
 REPO="https://github.com/antoinelucasfra/agentic-setup.git"
-TARGET="${HOME}/.agents"   # repo lives here
+TARGET="${HOME}/.agents" # repo lives here
 
-info()  { echo "  -> $*"; }
-ok()    { echo "  [ok] $*"; }
-skip()  { echo "  [skip] $*"; }
-warn()  { echo "  [warn] $*"; }
+info() { echo "  -> $*"; }
+ok() { echo "  [ok] $*"; }
+skip() { echo "  [skip] $*"; }
+warn() { echo "  [warn] $*"; }
 
 # ---- Resolve repo root (from a clone) or clone/pull into ~/.agents ----
 SRC="$(cd "$(dirname "${BASH_SOURCE[0]:-.}")" 2>/dev/null && pwd)"
 case "$(basename "$SRC")" in
-  scripts) REPO_ROOT="$(dirname "$SRC")" ;;  # bash scripts/install.sh from a clone
-  .)       REPO_ROOT="" ;;                   # piped via curl | bash — clone below
-  *)       REPO_ROOT="$SRC" ;;
+scripts) REPO_ROOT="$(dirname "$SRC")" ;; # bash scripts/install.sh from a clone
+.) REPO_ROOT="" ;;                        # piped via curl | bash — clone below
+*) REPO_ROOT="$SRC" ;;
 esac
 if [[ -n "$REPO_ROOT" ]] && [[ ! -d "$REPO_ROOT/pi" ]]; then
   REPO_ROOT=""
@@ -54,10 +54,13 @@ bash "$REPO_ROOT/scripts/setup.sh"
 # ---- Choose harness: pi | omp ----
 MODE=""
 case "${1:-}" in
-  pi|--pi)   MODE=pi ;;
-  omp|--omp) MODE=omp ;;
-  "")        MODE="" ;;
-  *)         warn "unknown argument '$1' — treating as interactive"; MODE="" ;;
+pi | --pi) MODE=pi ;;
+omp | --omp) MODE=omp ;;
+"") MODE="" ;;
+*)
+  warn "unknown argument '$1' — treating as interactive"
+  MODE=""
+  ;;
 esac
 
 if [[ -z "$MODE" ]]; then
@@ -68,9 +71,15 @@ if [[ -z "$MODE" ]]; then
   while true; do
     read -r -p "Choose [1/2]: " CHOICE
     case "$CHOICE" in
-      1|pi|Pi)   MODE=pi; break ;;
-      2|omp|Omp) MODE=omp; break ;;
-      *)         echo "  Please enter 1 (pi) or 2 (omp)." ;;
+    1 | pi | Pi)
+      MODE=pi
+      break
+      ;;
+    2 | omp | Omp)
+      MODE=omp
+      break
+      ;;
+    *) echo "  Please enter 1 (pi) or 2 (omp)." ;;
     esac
   done
 fi

@@ -19,10 +19,10 @@ OMP_CONFIG_HOME="${HOME}/.omp/agent"
 AGENTS_TARGET="${HOME}/.agents/AGENTS.md"
 SKILLS_TARGET="${HOME}/.agents/skills"
 
-info()  { echo "  -> $*"; }
-ok()    { echo "  [ok] $*"; }
-skip()  { echo "  [skip] $*"; }
-warn()  { echo "  [warn] $*"; }
+info() { echo "  -> $*"; }
+ok() { echo "  [ok] $*"; }
+skip() { echo "  [skip] $*"; }
+warn() { echo "  [warn] $*"; }
 
 # ---- 1. omp CLI ----
 if ! command -v omp &>/dev/null; then
@@ -60,11 +60,11 @@ if command -v yq &>/dev/null && [[ -f "$MANIFEST" ]]; then
   echo ""
   echo "=== Applying OMP manifest ==="
   mkdir -p "$OMP_CONFIG_HOME" "$OMP_CONFIG_HOME/extensions"
-  yq eval '.settings' "$MANIFEST" > "$OMP_CONFIG_HOME/config.yml" && ok "settings -> $OMP_CONFIG_HOME/config.yml"
+  yq eval '.settings' "$MANIFEST" >"$OMP_CONFIG_HOME/config.yml" && ok "settings -> $OMP_CONFIG_HOME/config.yml"
   for name in $(yq eval '.extensions | keys | .[]' "$MANIFEST" 2>/dev/null); do
     d="$OMP_CONFIG_HOME/extensions/$name"
     mkdir -p "$d"
-    yq eval ".extensions.\"$name\"" "$MANIFEST" -o=json > "$d/config.json" 2>/dev/null && ok "extension config -> $d/config.json"
+    yq eval ".extensions.\"$name\"" "$MANIFEST" -o=json >"$d/config.json" 2>/dev/null && ok "extension config -> $d/config.json"
   done
   for source in $(yq eval '.marketplaces[].source' "$MANIFEST" 2>/dev/null); do
     omp plugin marketplace list 2>/dev/null | grep -qF "$source" || omp plugin marketplace add "$source" >/dev/null 2>&1 || true

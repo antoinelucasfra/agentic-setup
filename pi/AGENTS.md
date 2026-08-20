@@ -17,8 +17,28 @@
 ## Tool Selection
 
 - Prefer pi's specialized tools (`read`, `ffgrep`, `fffind`, `replace`) over raw shell for listing, searching, and reading files. Don't route exploration through `ls`/`find`/`grep`/`cat` in bash.
-- Shell out only when a real subprocess is required (builds, git, docker, data pipelines, inspection).
+- Shell out only when a real subprocess is required (builds, git, docker, data pipelines, inspection). When a shell command is genuinely needed, use the Modern CLI Tools below — never the POSIX originals (`ls`, `cat`, `find`, `grep`, `sed`, `cd`, `diff`).
 - When the `rtk` token-optimizing CLI proxy is available and configured, prefix shell commands with it (`rtk git status`). If `rtk` is missing or broken on a machine, use plain commands — never let an unavailable proxy block work.
+
+## Modern CLI Tools
+
+Rust-based replacements for the POSIX originals. All are installed in `~/.pi/agent/bin` (already on PATH). Use them whenever a shell subprocess is required instead of `ls`/`cat`/`find`/`grep`/`sed`/`cd`/`diff`.
+
+| Task | Old | Modern | Usage |
+|------|-----|--------|-------|
+| List files | `ls` | `eza` | `eza -l --git --icons` (long form, git status, icons) |
+| Read / print files | `cat` | `bat` | `bat --paging=never file` (never page when piping/non-interactive) |
+| Find files | `find` | `fd` | `fd <pattern>` (respects .gitignore, sane defaults) |
+| Search file contents | `grep` | `rg` (ripgrep) | `rg -n <pattern>` (already used by pi's `ffgrep`) |
+| Change directory | `cd` | `z` (zoxide) | `z <partial>` jumps to frequent/recent dirs |
+| Stream edit | `sed` | `sd` | `sd 'find' 'replace'` (no regex escaping needed) |
+| Diff / git diff | `diff` | `delta` | set as the `git` and `git diff` pager |
+| Fuzzy pick from a list | — | `fzf` | pipe any list into `fzf` for interactive filtering |
+
+Notes:
+- `bat` and `delta` work with zero config. `delta` is wired as the git pager in this environment.
+- `z` (zoxide) requires `eval "$(zoxide init bash)"` in the shell profile to define the `z` function; the `zoxide` binary itself works without it. This is already sourced in interactive/bash profiles here.
+- If a tool is unexpectedly missing, fall back to the POSIX original rather than failing — and report the gap so it can be reinstalled.
 
 ## Security & OWASP (condensed)
 

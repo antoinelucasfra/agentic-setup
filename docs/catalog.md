@@ -106,6 +106,14 @@ These work with any coding agent on any project. Installed by `scripts/setup.sh`
 | `air` | R code formatting | `uv tool install air-formatter` |
 | `jarl` | R code linting | [jarl releases](https://github.com/etiennebacher/jarl/releases/latest) |
 | `yq` | YAML processing (OMP manifest) | `uv tool install yq` / brew |
+| `eza` | `ls` replacement — file listing | scoop/winget/choco/apt/brew `eza` |
+| `bat` | `cat` replacement — paged file view | scoop/winget/choco/apt/brew `bat` |
+| `fzf` | fuzzy finder — interactive list filtering | scoop/winget/choco/apt/brew `fzf` |
+| `zoxide` | `cd` replacement — smart directory jump (`z`) | scoop/winget/choco/apt/brew `zoxide` |
+| `delta` | `diff` replacement — git pager | scoop/winget/choco `delta`; apt/brew `git-delta` |
+| `sd` | `sed` replacement — stream edit | scoop/winget/choco/apt/brew `sd` |
+| `fd` | `find` replacement | shipped by pi harness in `~/.pi/agent/bin` |
+| `rg` | `grep` replacement (ripgrep) | shipped by pi harness in `~/.pi/agent/bin` |
 
 ---
 

@@ -72,6 +72,10 @@ wire_file "pi/extensions/pi-rtk-optimizer/config.json" "$PI_HOME/extensions/pi-r
 # ---- 3. Deploy pi/skills -> ~/.pi/agent/skills (native pi global skills) ----
 deploy_skills() {  # $1 = source dir, $2 = target dir
   local src="$1" dst="$2"
+  if [[ -e "$dst" ]] && ! [[ -L "$dst" ]] && diff -rq "$src" "$dst" >/dev/null 2>&1; then
+    ok "$(basename "$src") already up to date at $dst"
+    return 0
+  fi
   if [[ -L "$dst" ]]; then
     rm "$dst"
   elif [[ -e "$dst" ]]; then

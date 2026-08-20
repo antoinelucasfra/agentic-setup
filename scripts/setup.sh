@@ -14,10 +14,10 @@ set -euo pipefail
 OS="$(uname -s)"
 is_windows=false
 case "$OS" in
-  MINGW*|MSYS*|CYGWIN*) is_windows=true;;
+MINGW* | MSYS* | CYGWIN*) is_windows=true ;;
 esac
 case "$OSTYPE" in
-  mingw*|msys*) is_windows=true;;
+mingw* | msys*) is_windows=true ;;
 esac
 
 install_cmd=""
@@ -71,10 +71,10 @@ detect_pkg_manager() {
 detect_pkg_manager || warn "No supported package manager found — uv-based installs still work"
 
 # ---- Helpers ----
-info()  { echo "  -> $*"; }
-ok()    { echo "  [ok] $*"; }
-skip()  { echo "  [skip] $* (already installed)"; }
-warn()  { echo "  [warn] $*"; }
+info() { echo "  -> $*"; }
+ok() { echo "  [ok] $*"; }
+skip() { echo "  [skip] $* (already installed)"; }
+warn() { echo "  [warn] $*"; }
 
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
@@ -83,19 +83,34 @@ try() {
   local name="$1" method="$2"
   local bin="${3:-$name}" pkg="${4:-$name}"
 
-  command -v "$bin" &>/dev/null && { skip "$name"; return 0; }
+  command -v "$bin" &>/dev/null && {
+    skip "$name"
+    return 0
+  }
 
   case "$method" in
-    system)
-      [[ -z "$install_cmd" ]] && { warn "No package manager — install $name manually"; return 1; }
-      info "Installing $name via $pkg_manager ..."
-      $sudo_prefix $install_cmd "$pkg" >/dev/null 2>&1 && { ok "$name"; return 0; }
-      ;;
-    uv)
-      command -v uv &>/dev/null || { warn "uv not found — install $name manually"; return 1; }
-      info "Installing $name via uv ..."
-      uv tool install "$name" >/dev/null 2>&1 && { ok "$name"; return 0; }
-      ;;
+  system)
+    [[ -z "$install_cmd" ]] && {
+      warn "No package manager — install $name manually"
+      return 1
+    }
+    info "Installing $name via $pkg_manager ..."
+    $sudo_prefix $install_cmd "$pkg" >/dev/null 2>&1 && {
+      ok "$name"
+      return 0
+    }
+    ;;
+  uv)
+    command -v uv &>/dev/null || {
+      warn "uv not found — install $name manually"
+      return 1
+    }
+    info "Installing $name via uv ..."
+    uv tool install "$name" >/dev/null 2>&1 && {
+      ok "$name"
+      return 0
+    }
+    ;;
   esac
   warn "$method install $name failed"
   return 1
@@ -113,7 +128,7 @@ try "gh" system "gh" "$([ "$pkg_manager" = winget ] && echo 'GitHub.cli' || echo
 if ! command -v uv &>/dev/null; then
   info "Installing uv ..."
   if $is_windows; then
-if powershell -Command "irm https://astral.sh/uv/install.ps1 | iex" >/dev/null 2>&1; then
+    if powershell -Command "irm https://astral.sh/uv/install.ps1 | iex" >/dev/null 2>&1; then
       ok "uv"
     else
       warn "uv install failed — run manually:  powershell -c \"irm https://astral.sh/uv/install.ps1 | iex\""
@@ -143,7 +158,7 @@ try "air" uv "air" "air-formatter"
 # jarl — R linter CLI (standalone installer)
 if ! command -v jarl &>/dev/null; then
   info "Installing jarl via standalone installer ..."
-if curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh >/dev/null 2>&1; then
+  if curl -LsSf https://github.com/etiennebacher/jarl/releases/latest/download/jarl-installer.sh | sh >/dev/null 2>&1; then
     ok "jarl"
   else
     warn "jarl install failed (needs curl + POSIX shell)"

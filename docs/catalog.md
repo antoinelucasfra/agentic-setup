@@ -1,111 +1,27 @@
 # catalog — extensions, plugins, and skills
 
-Every item shipped in this config, with its original GitHub source URL where
-available. Data resolved from package.json `repository` fields, SKILL.md
-citations, and the OMP manifest on 2026-08-20.
-
-Skills with no recorded origin in the repo are listed under
-[bundled skills](#bundled-skills--origin-not-recorded).
+Everything shipped in this config, organized by what's harness-specific versus
+what works with any coding agent. Source URLs resolved from package.json
+`repository` fields, SKILL.md citations, and the OMP manifest on 2026-08-20.
 
 ---
 
-## pi extensions
+## harness-agnostic elements
 
-Pi extensions are config files written to `~/.pi/agent/extensions/`. Each is
-provided by a pi npm package.
+These work with **any coding agent** that supports the
+[Agent Skills spec](https://agentskills.io) (SKILL.md format) or standalone
+CLI tools. They are not tied to pi or OMP.
 
-| Extension | Package | GitHub |
-| --- | --- | --- |
-| `pi-rtk-optimizer` | `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
-| `pi-lens` (ast-grep, lsp-navigation, tree-sitter rules) | `npm:pi-lens` | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
-| `pi-mcp-adapter` | `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
-| `pi-fff` | `npm:@ff-labs/pi-fff` | [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff) |
-| `pi-web-access` | `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
-| `pi-agent-browser-native` | `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
-| `pi-background-tasks` | `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
-| `pi-hashline-edit-pro` | `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
-| `pi-subagents` | `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
-| `pi-blackhole` | `npm:pi-blackhole` | [k0valik/pi-blackhole](https://github.com/k0valik/pi-blackhole) |
+### portable skills (97)
 
----
+Skills are harness-agnostic markdown instructions. Each lives in a directory
+with a `SKILL.md` — loadable by pi, OMP, Copilot, Cursor, Aider, Cline,
+Continue, Windsurf, or any agent that reads the Agent Skills spec.
 
-## pi plugins (packages)
+#### skills with a recorded origin
 
-Installed into `~/.pi/agent/npm/node_modules` via `pi install`. Each package
-may register extensions, skills, or both.
-
-| Package | GitHub |
-| --- | --- |
-| `npm:pi-blackhole` | [k0valik/pi-blackhole](https://github.com/k0valik/pi-blackhole) |
-| `npm:pi-caveman` | [jonjonrankin/pi-caveman](https://github.com/jonjonrankin/pi-caveman) |
-| `npm:@juicesharp/rpiv-ask-user-question` | [juicesharp/rpiv-mono](https://github.com/juicesharp/rpiv-mono) |
-| `npm:@dietrichgebert/ponytail` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
-| `npm:@juicesharp/rpiv-todo` | [juicesharp/rpiv-mono](https://github.com/juicesharp/rpiv-mono) |
-| `npm:@ff-labs/pi-fff` | [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff) |
-| `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
-| `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
-| `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
-| `npm:pi-lens` | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
-| `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
-| `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
-| `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
-| `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
-
----
-
-## OMP plugins
-
-Applied from `omp/omp-manifest.yml` into `~/.omp/agent/`. Installed via
-`omp plugin install`.
-
-### Marketplace plugins (from `anthropics/claude-plugins-official`)
-
-Installed as `marketplace-id@anthropics/claude-plugins-official`. Source repo:
-[github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)
-
-| Plugin ID |
-| --- |
-| `context7` |
-| `github` |
-| `claude-md-management` |
-| `data` |
-| `duckdb-skills` |
-| `code-review` |
-| `code-simplifier` |
-| `skill-creator` |
-| `session-report` |
-| `remember` |
-| `firecrawl` |
-| `hookify` |
-| `claude-code-setup` |
-| `pr-review-toolkit` |
-
-### Marketplace plugins (from `pymc-labs/python-analytics-skills`)
-
-Source repo:
-[github.com/pymc-labs/python-analytics-skills](https://github.com/pymc-labs/python-analytics-skills)
-
-| Plugin ID |
-| --- |
-| `analytics` |
-
-### npm plugins
-
-| Package | GitHub |
-| --- | --- |
-| `npm:@dietrichgebert/ponytail` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
-| `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
-| `npm:omp-cache-optimizer` | npm only |
-| `npm:omp-headroom` | npm only |
-| `npm:omp-mode-switch` | npm only |
-| `npm:@oh-my-pi/omp-stats` | npm only |
-
----
-
-## skills with a recorded origin
-
-These 35 skills have a verifiable source: either provided by a pi npm package
-(package.json `pi.skills`) or cited in the skill's own SKILL.md / lockfile.
+These 35 skills have a verifiable source — either provided by a pi npm
+package or cited in the skill's own SKILL.md / lockfile.
 
 | Skill | Origin | GitHub |
 | --- | --- | --- |
@@ -145,14 +61,13 @@ These 35 skills have a verifiable source: either provided by a pi npm package
 | `caveman-stats` | SKILL.md citation | [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) |
 | `microsoft-foundry` | lockfile | [microsoft/azure-skills](https://github.com/microsoft/azure-skills) |
 
----
+#### bundled skills — origin not recorded
 
-## bundled skills — origin not recorded
-
-These 72 skills are shipped directly in `pi/skills/`. No origin URL is embedded
-in their SKILL.md and they are not provided by any pi npm package. They were
-collected from the [agent-skills.io](https://agentskills.io) ecosystem and
-related communities. If you know the source repo for one, open a PR.
+These 62 skills are shipped directly in `pi/skills/`. No origin URL is
+embedded in their SKILL.md and they are not provided by any pi npm package.
+They were collected from the
+[agent-skills.io](https://agentskills.io) ecosystem and related communities.
+If you know the source repo for one, open a PR.
 
 `agentic-eval` `alt-text` `automate-this` `brand-yml` `breakdown-epic-arch`
 `breakdown-epic-pm` `breakdown-feature-implementation` `cavecrew` `cli`
@@ -174,3 +89,142 @@ related communities. If you know the source repo for one, open a PR.
 `shiny-bslib-theming` `shiny-testing` `specification` `sql-optimization`
 `structured-autonomy-plan` `testing-r-packages` `uv-python-project`
 `what-context-needed` `working-on`
+
+### portable CLI tools
+
+These work with any coding agent on any project. Installed by `scripts/setup.sh`
+(shared across both harnesses).
+
+| Tool | Used for | Install |
+| --- | --- | --- |
+| `git` | version control | system package manager |
+| `node` + `npm` | package management | system package manager |
+| `python` | scripting, package extraction | system package manager |
+| `gh` | PR/issue management | system / brew / scoop / winget |
+| `uv` | Python gates (ruff, pytest) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| `ruff` | Python linting/formatting | `uv tool install ruff` |
+| `air` | R code formatting | `uv tool install air-formatter` |
+| `jarl` | R code linting | [jarl releases](https://github.com/etiennebacher/jarl/releases/latest) |
+| `yq` | YAML processing (OMP manifest) | `uv tool install yq` / brew |
+
+---
+
+## pi-specific elements
+
+These are specific to the [pi](https://pi.dev) harness
+(`@earendil-works/pi-coding-agent`). They use pi's extension/package system
+and deploy into `~/.pi/agent/`.
+
+### pi extensions
+
+Config files written to `~/.pi/agent/extensions/`. Each is provided by a pi
+npm package and registers runtime behavior (linter, browser, MCP adapter, etc.).
+
+| Extension | Package | GitHub |
+| --- | --- | --- |
+| `pi-rtk-optimizer` | `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
+| `pi-lens` (ast-grep, lsp, tree-sitter) | `npm:pi-lens` | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
+| `pi-mcp-adapter` | `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
+| `pi-fff` | `npm:@ff-labs/pi-fff` | [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff) |
+| `pi-web-access` | `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
+| `pi-agent-browser-native` | `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
+| `pi-background-tasks` | `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
+| `pi-hashline-edit-pro` | `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
+| `pi-subagents` | `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
+| `pi-blackhole` | `npm:pi-blackhole` | [k0valik/pi-blackhole](https://github.com/k0valik/pi-blackhole) |
+
+### pi packages (npm)
+
+Installed into `~/.pi/agent/npm/node_modules` via `pi install`. Each may
+register extensions, skills, or both. The skills they ship are listed above
+under "portable skills with a recorded origin".
+
+| Package | GitHub |
+| --- | --- |
+| `npm:pi-blackhole` | [k0valik/pi-blackhole](https://github.com/k0valik/pi-blackhole) |
+| `npm:pi-caveman` | [jonjonrankin/pi-caveman](https://github.com/jonjonrankin/pi-caveman) |
+| `npm:@juicesharp/rpiv-ask-user-question` | [juicesharp/rpiv-mono](https://github.com/juicesharp/rpiv-mono) |
+| `npm:@dietrichgebert/ponytail` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `npm:@juicesharp/rpiv-todo` | [juicesharp/rpiv-mono](https://github.com/juicesharp/rpiv-mono) |
+| `npm:@ff-labs/pi-fff` | [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff) |
+| `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
+| `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
+| `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
+| `npm:pi-lens` | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
+| `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
+| `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
+| `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
+| `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
+
+### pi config files
+
+Deployed into `~/.pi/agent/` by `scripts/install-pi.sh`.
+
+| File | Deployed to | What it does |
+| --- | --- | --- |
+| `pi/AGENTS.md` | `~/.pi/agent/AGENTS.md` | Global agent instructions (R/air/jarl workflow, security, review priorities) |
+| `pi/settings.json` | `~/.pi/agent/settings.json` | Packages list, theme, default model, thinking level |
+| `pi/models.json` | `~/.pi/agent/models.json` | Custom providers with env-var API keys (commandcode) |
+| `pi/extensions/pi-rtk-optimizer/config.json` | `~/.pi/agent/extensions/pi-rtk-optimizer/config.json` | RTK output compaction settings |
+
+---
+
+## omp-specific elements
+
+These are specific to the OMP harness
+(`@oh-my-pi/pi-coding-agent`). They use OMP's marketplace/plugin system and
+deploy into `~/.omp/agent/`.
+
+### OMP marketplace plugins
+
+Installed via `omp plugin install`. The marketplace is the plugin registry
+that OMP queries to find and install plugins.
+
+#### from `anthropics/claude-plugins-official`
+
+Source repo: [github.com/anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official)
+
+| Plugin ID | What it provides |
+| --- | --- |
+| `context7` | Upstream docs lookup |
+| `github` | GitHub CLI integration |
+| `claude-md-management` | CLAUDE.md file management |
+| `data` | Data analysis tools |
+| `duckdb-skills` | DuckDB SQL integration |
+| `code-review` | Structured code review |
+| `code-simplifier` | Code simplification |
+| `skill-creator` | Create new skills |
+| `session-report` | Session summaries |
+| `remember` | Cross-session memory |
+| `firecrawl` | Web scraping |
+| `hookify` | Hook management |
+| `claude-code-setup` | Setup wizard |
+| `pr-review-toolkit` | PR review workflow |
+
+#### from `pymc-labs/python-analytics-skills`
+
+Source repo: [github.com/pymc-labs/python-analytics-skills](https://github.com/pymc-labs/python-analytics-skills)
+
+| Plugin ID | What it provides |
+| --- | --- |
+| `analytics` | Python analytics (PyMC, ArviZ, Stan, JAX, PyTensor) |
+
+### OMP npm plugins
+
+| Package | GitHub |
+| --- | --- |
+| `npm:@dietrichgebert/ponytail` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) |
+| `npm:pi-rtk-optimizer` | [MasuRii/pi-rtk-optimizer](https://github.com/MasuRii/pi-rtk-optimizer) |
+| `npm:omp-cache-optimizer` | npm only |
+| `npm:omp-headroom` | npm only |
+| `npm:omp-mode-switch` | npm only |
+| `npm:@oh-my-pi/omp-stats` | npm only |
+
+### OMP config files
+
+Deployed into `~/.omp/agent/` and `~/.agents/` by `scripts/install-omp.sh`.
+
+| File | Deployed to | What it does |
+| --- | --- | --- |
+| `omp/AGENTS.md` | `~/.agents/AGENTS.md` | Global agent instructions (rtk workflow) |
+| `omp/omp-manifest.yml` | `~/.omp/agent/` | Plugin registry, settings, extension configs |

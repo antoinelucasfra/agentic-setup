@@ -135,11 +135,15 @@ npm package and registers runtime behavior (linter, browser, MCP adapter, etc.).
 | `pi-mcp-adapter` | `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
 | `pi-fff` | `npm:@ff-labs/pi-fff` | [dmtrKovalenko/fff](https://github.com/dmtrKovalenko/fff) |
 | `pi-web-access` | `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
-| `pi-agent-browser-native` | `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
 | `pi-background-tasks` | `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
-| `pi-hashline-edit-pro` | `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
-| `pi-subagents` | `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
 | `pi-blackhole` | `npm:pi-blackhole` | [k0valik/pi-blackhole](https://github.com/k0valik/pi-blackhole) |
+| `pi-interactive-shell` | `npm:pi-interactive-shell` | [nicobailon/pi-interactive-shell](https://github.com/nicobailon/pi-interactive-shell) |
+| `checkpoint` (rewind) | `npm:@pi-plugins/checkpoint` | [k3dom/pi-plugins](https://github.com/k3dom/pi-plugins) |
+| `hermes-memory` (persistent memory, SQLite FTS5) | `npm:pi-hermes-memory` | [chandra447/pi-hermes-memory](https://github.com/chandra447/pi-hermes-memory) |
+| `plan-mode` (`/plan`) | `npm:@narumitw/pi-plan-mode` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `statusline` (context/tokens/cost footer) | `npm:@narumitw/pi-statusline` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `worktree` (managed worktrees) | `npm:@narumitw/pi-worktree` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `btw` (`/btw` side notes) | `npm:pi-btw` | [dbachelder/pi-btw](https://github.com/dbachelder/pi-btw) |
 
 ### pi packages (npm)
 
@@ -159,10 +163,15 @@ under "portable skills with a recorded origin".
 | `npm:pi-web-access` | [nicobailon/pi-web-access](https://github.com/nicobailon/pi-web-access) |
 | `npm:pi-mcp-adapter` | [nicobailon/pi-mcp-adapter](https://github.com/nicobailon/pi-mcp-adapter) |
 | `npm:pi-lens` | [apmantza/pi-lens](https://github.com/apmantza/pi-lens) |
-| `npm:@tintinweb/pi-subagents` | [tintinweb/pi-subagents](https://github.com/tintinweb/pi-subagents) |
+| `npm:pi-subagents` | — |
 | `npm:pi-background-tasks` | [ismailsaleekh/pi-background-tasks](https://github.com/ismailsaleekh/pi-background-tasks) |
-| `npm:pi-hashline-edit-pro` | [YuGiMob/pi-hashline-edit-pro](https://github.com/YuGiMob/pi-hashline-edit-pro) |
-| `npm:pi-agent-browser-native` | [fitchmultz/pi-agent-browser-native](https://github.com/fitchmultz/pi-agent-browser-native) |
+| `npm:pi-interactive-shell` | [nicobailon/pi-interactive-shell](https://github.com/nicobailon/pi-interactive-shell) |
+| `npm:@pi-plugins/checkpoint` | [k3dom/pi-plugins](https://github.com/k3dom/pi-plugins) |
+| `npm:pi-hermes-memory` | [chandra447/pi-hermes-memory](https://github.com/chandra447/pi-hermes-memory) |
+| `npm:@narumitw/pi-plan-mode` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `npm:@narumitw/pi-statusline` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `npm:@narumitw/pi-worktree` | [narumiruna/pi-extensions](https://github.com/narumiruna/pi-extensions) |
+| `npm:pi-btw` | [dbachelder/pi-btw](https://github.com/dbachelder/pi-btw) |
 
 ### pi config files
 

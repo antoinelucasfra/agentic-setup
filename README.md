@@ -24,18 +24,44 @@ It clones the repo into `~/.agents/`, installs the shared CLI tools (`gh`, `uv`,
 At the prompt choose **1**. `install-pi.sh` then:
 
 1. Wires `pi/AGENTS.md`, `settings.json`, `models.json`, `extensions/` into `~/.pi/agent/`
-2. Deploys `pi/skills` (97) → `~/.pi/agent/skills` and `pi/rules` → `~/.pi/agent/rules`
+2. Deploys `pi/skills` (~100 skills) → shared skills dir and `pi/rules` → rules dir
 3. Installs all 19 configured pi packages
 
-**Authenticate** (no credentials ship in the repo):
+**Authenticate** (no credentials ship in the repo — keys are env vars):
 
 ```bash
-pi /login              # provider key / subscription
-export CMD_API_KEY=... # commandcode provider key — see ~/.pi/agent/models.json
-pi update --models     # refresh model catalogs
+pi /login                        # provider key / subscription
+export CMD_API_KEY=...           # commandcode provider (see ~/.pi/agent/models.json)
+export UNSLOTH_API_KEY=...       # unsloth provider (see ~/.pi/agent/models.json)
+pi update --models               # refresh model catalogs
 ```
 
+Tip: put the exports in `~/.bashrc` / `~/.zshrc` so they survive reboots.
+
 Start: `pi`.
+
+### Set up sync (pi devices only)
+
+The repo is the single source of truth for pi config across devices. Sync is
+manual and explicit:
+
+- **Inside pi:** run `/sync-repo` — pushes your live config to GitHub
+- **In a shell:** `bash ~/.agents/agentic-setup/scripts/sync.sh` (same thing)
+
+What it does: `git pull --rebase` → copies live config (settings, models,
+extensions, skills, rules) into the repo → commits as `sync from <hostname>` →
+pushes. Skips silently when nothing changed. Refuses to run if a hardcoded API
+key is detected in models.json, and stops on git conflicts instead of guessing.
+
+To **pull** other machines' changes into this device, re-run the installer:
+
+```bash
+cd ~/.agents/agentic-setup && git pull && bash scripts/install.sh pi
+```
+
+Typical rhythm: finish work on device A → `/sync-repo`; before starting on
+device B → `git pull && bash scripts/install.sh pi`. Memory DB, sessions, and
+credentials stay per-device by design.
 
 ### Option B — omp
 
@@ -70,8 +96,8 @@ Re-running is idempotent: unchanged files are left alone, changed ones are backe
 | `pi/AGENTS.md` | pi | `~/.pi/agent/AGENTS.md` | Global agent instructions |
 | `pi/settings.json` | pi | `~/.pi/agent/settings.json` | Packages, theme, default model/thinking |
 | `pi/models.json` | pi | `~/.pi/agent/models.json` | Custom providers (env-var keys only) |
-| `pi/extensions/` | pi | `~/.pi/agent/extensions/` | Extension configs (rtk-optimizer) |
-| `pi/skills/` | pi | `~/.pi/agent/skills/` | 97 Agent Skills (loaded on-demand) |
+| `pi/extensions/` | pi | `~/.pi/agent/extensions/` | Custom extensions (`sync-repo.ts`, `review.ts`, provider syncs, rtk-optimizer config) |
+| `pi/skills/` | pi | shared skills dir | ~100 Agent Skills (loaded on-demand) |
 | `pi/rules/` | pi | `~/.pi/agent/rules/` | Coding rules (folded into `pi/AGENTS.md`) |
 | `omp/AGENTS.md` | omp | `~/.agents/AGENTS.md` | OMP global instructions (rtk) |
 | `omp/omp-manifest.yml` | omp | `~/.omp/agent/` | OMP plugins, settings, extension configs |
@@ -79,6 +105,8 @@ Re-running is idempotent: unchanged files are left alone, changed ones are backe
 | `scripts/install-pi.sh` | pi | — | Deploys `pi/` → `~/.pi/agent/` + packages |
 | `scripts/install-omp.sh` | omp | — | Applies `omp/` manifest + AGENTS.md + skills |
 | `scripts/setup.sh` | both | — | CLI tool installer (gh, uv, air, jarl, ruff) |
+| `scripts/sync.sh` | pi | — | Live config → repo sync (used by `/sync-repo`) |
+| `.github/workflows/ci.yml` | — | — | CI: validates JSON/YAML + shellchecks scripts on every push |
 
 `pi/` is self-contained: everything pi needs (instructions, settings, models,
 extensions, skills, rules) lives under it. `omp/` is likewise self-contained.

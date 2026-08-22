@@ -1,0 +1,22 @@
+name: ci
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate JSON configs
+        run: |
+          for f in pi/settings.json pi/models.json omp/omp-manifest.yml; do
+            [[ -f "$f" ]] || continue
+            case "$f" in
+              *.json) python3 -m json.tool "$f" > /dev/null && echo "ok $f" ;;
+              *.yml)  python3 -c "import yaml,sys; yaml.safe_load(open('$f'))" && echo "ok $f" ;;
+            esac
+          done
+      - name: Shellcheck scripts
+        run: |
+          shellcheck scripts/*.sh && echo "shellcheck ok"

@@ -25,15 +25,5 @@
   "defaultProvider": "opencode-go",
   "defaultModel": "ox-alpha-free",
   "defaultThinkingLevel": "high",
-  "quietStartup": true,
-  "enableSkillCommands": true,
-  "autocompleteMaxVisible": 10,
-  "terminal": {
-    "showTerminalProgress": false
-  },
-  "markdown": {
-    "mermaid": "streaming"
-  },
-  "hideThinkingBlock": false,
-  "tuiMode": "regular"
+  "quietStartup": true
 }

@@ -3,7 +3,7 @@
     "commandcode": {
       "baseUrl": "https://api.commandcode.ai/provider/v1",
       "api": "openai-completions",
-      "apiKey": "${CMD_API_KEY}",
+      "apiKey": "$CMD_API_KEY",
       "models": [
         {
           "id": "claude-sonnet-5",

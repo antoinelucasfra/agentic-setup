@@ -50,7 +50,8 @@ wire_file() { # $1 = repo-relative path, $2 = target path
     }
   fi
   if [[ -f "$dst" ]] && ! cmp -s "$src" "$dst"; then
-    local bak="$dst.bak.$(date +%Y%m%d%H%M%S)"
+    local bak
+    bak="$dst.bak.$(date +%Y%m%d%H%M%S)"
     info "backing up existing $dst -> $bak"
     cp "$dst" "$bak"
   fi

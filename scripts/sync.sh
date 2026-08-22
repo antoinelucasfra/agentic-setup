@@ -9,6 +9,10 @@ REPO="${PI_SYNC_REPO:-$HOME/.agents/agentic-setup}"
 [[ -d "$REPO/.git" ]] || { echo "no config repo found (~/.agents/agentic-setup or ~/project/agentic-setup). Set PI_SYNC_REPO." >&2; exit 1; }
 
 PI_HOME="$HOME/.pi/agent"
+# never sync secrets — hardcoded keys must live in env vars only
+if grep -Eq '"apiKey": "[^"]{16,}"' "$PI_HOME/models.json"; then
+  echo "REFUSING: hardcoded apiKey in $PI_HOME/models.json — use \"\$CMD_API_KEY\" placeholder" >&2; exit 1
+fi
 cd "$REPO"
 git pull --rebase --autostash || { echo "pull failed — resolve conflict in $REPO manually" >&2; exit 1; }
 

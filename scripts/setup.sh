@@ -95,6 +95,8 @@ try() {
       return 1
     }
     info "Installing $name via $pkg_manager ..."
+    # sudo_prefix/install_cmd are intentionally word-split
+    # shellcheck disable=SC2086
     $sudo_prefix $install_cmd "$pkg" >/dev/null 2>&1 && {
       ok "$name"
       return 0

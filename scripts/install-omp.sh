@@ -44,9 +44,9 @@ fi
 if ! command -v yq &>/dev/null; then
   info "Installing yq ..."
   if command -v uv &>/dev/null; then
-    uv tool install yq >/dev/null 2>&1 && ok "yq" || warn "yq install failed — install yq and re-run"
+    if uv tool install yq >/dev/null 2>&1; then ok "yq"; else warn "yq install failed — install yq and re-run"; fi
   elif command -v brew &>/dev/null; then
-    brew install yq >/dev/null 2>&1 && ok "yq" || warn "yq install failed"
+    if brew install yq >/dev/null 2>&1; then ok "yq"; else warn "yq install failed"; fi
   else
     warn "yq not found and no installer — manifest not applied"
   fi

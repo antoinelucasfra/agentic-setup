@@ -25,7 +25,7 @@ At the prompt choose **1**. `install-pi.sh` then:
 
 1. Wires `pi/AGENTS.md`, `settings.json`, `models.json`, `extensions/` into `~/.pi/agent/`
 2. Deploys `pi/skills` (97) → `~/.pi/agent/skills` and `pi/rules` → `~/.pi/agent/rules`
-3. Installs all 14 configured pi packages
+3. Installs all 19 configured pi packages
 
 **Authenticate** (no credentials ship in the repo):
 

@@ -1,24 +1,31 @@
 {
   "packages": [
-    "npm:pi-blackhole",
-    "npm:pi-caveman",
-    "npm:@juicesharp/rpiv-ask-user-question",
-    "npm:@dietrichgebert/ponytail",
-    "npm:@juicesharp/rpiv-todo",
-    "npm:@ff-labs/pi-fff",
     "npm:pi-rtk-optimizer",
-    "npm:pi-web-access",
-    "npm:pi-mcp-adapter",
-    "npm:pi-lens",
-    "npm:@tintinweb/pi-subagents",
+    "git:github.com/k0valik/pi-blackhole",
+    "npm:@dietrichgebert/ponytail",
+    "npm:pi-caveman",
     "npm:pi-background-tasks",
-    "npm:pi-hashline-edit-pro",
-    "npm:pi-agent-browser-native"
+    "npm:@juicesharp/rpiv-ask-user-question",
+    "npm:@juicesharp/rpiv-todo",
+    "npm:pi-mcp-adapter",
+    "npm:pi-web-access",
+    "npm:pi-subagents",
+    "npm:pi-lens",
+    "npm:@ff-labs/pi-fff",
+    "npm:pi-interactive-shell",
+    "npm:@pi-plugins/checkpoint",
+    "npm:pi-hermes-memory",
+    "npm:@narumitw/pi-plan-mode",
+    "npm:@narumitw/pi-statusline",
+    "npm:@narumitw/pi-worktree",
+    "npm:pi-btw"
   ],
+  "lastChangelogVersion": "0.84.2",
   "theme": "dark",
   "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4-flash",
+  "defaultModel": "ox-alpha-free",
   "defaultThinkingLevel": "high",
+  "quietStartup": true,
   "enableSkillCommands": true,
   "autocompleteMaxVisible": 10,
   "terminal": {
@@ -28,6 +35,5 @@
     "mermaid": "streaming"
   },
   "hideThinkingBlock": false,
-  "quietStartup": false,
   "tuiMode": "regular"
 }
